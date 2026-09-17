@@ -4,6 +4,12 @@
   box-sizing: border-box;
 }
 
+body {
+  background-color: #fffaf5;
+  color: #1f1f1f;
+  font-family: sans-serif;
+}
+
 nav {
   display: flex;
   align-items: center;
@@ -30,11 +36,15 @@ nav {
 .nav-links a {
   text-decoration: none;
   font-size: 1rem;
+  color: #1f1f1f;
+  transition: color 0.2s ease;
 }
 
 .nav-buttons a {
   text-decoration: none;
   font-size: 1rem;
+  color: #1f1f1f;
+  transition: color 0.2s ease;
 }
 
 .nav-buttons button {
@@ -43,4 +53,16 @@ nav {
   border-radius: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
+  background-color: #ee7219;
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+.nav-buttons button:hover {
+  background-color: #ce6011;
+}
+
+.nav-links a:hover,
+.nav-buttons a:hover {
+  color: #ee7219;
 }
