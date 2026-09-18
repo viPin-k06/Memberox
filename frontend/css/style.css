@@ -232,6 +232,97 @@ nav {
   margin: 0 auto;
 }
 
+.pricing {
+  text-align: center;
+  padding: 5rem 2rem;
+}
+
+.pricing-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ee7219;
+  margin-bottom: 1rem;
+}
+
+.pricing-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.pricing-description {
+  font-size: 1.1rem;
+  color: #666666;
+  max-width: 40rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.pricing-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 50rem;
+  margin: 3rem auto 0;
+}
+
+.pricing-card {
+  background-color: #ffffff;
+  padding: 2rem;
+  border: 1px solid #eeeeee;
+  border-radius: 0.75rem;
+  text-align: left;
+}
+
+.pricing-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.price span {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #666666;
+}
+
+.pricing-card > p:not(.price) {
+  color: #666666;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.pricing-card ul {
+  list-style: none;
+  margin-bottom: 2rem;
+}
+
+.pricing-card li {
+  margin-bottom: 0.75rem;
+}
+
+.pricing-card button {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #ee7219;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pricing-card.featured {
+  border: 2px solid #ee7219;
+}
+
 @media (max-width: 768px) {
   nav {
     padding: 1rem;
@@ -262,6 +353,10 @@ nav {
   }
 
   .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-cards {
     grid-template-columns: 1fr;
   }
 }
