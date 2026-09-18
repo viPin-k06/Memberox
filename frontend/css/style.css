@@ -323,6 +323,54 @@ nav {
   border: 2px solid #ee7219;
 }
 
+.cta {
+  text-align: center;
+  padding: 6rem 2rem;
+  margin: 2rem 2rem 5rem;
+  background-color: #1f1f1f;
+  color: #ffffff;
+  border-radius: 1rem;
+}
+
+.cta-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ee7219;
+  margin-bottom: 1rem;
+}
+
+.cta-title {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.cta-description {
+  max-width: 40rem;
+  margin: 0 auto 2rem;
+  color: #cccccc;
+  line-height: 1.6;
+}
+
+.cta-button {
+  padding: 0.8rem 1.6rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #ee7219;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.cta-button:hover {
+  background-color: #ce6011;
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
   nav {
     padding: 1rem;
@@ -358,5 +406,14 @@ nav {
 
   .pricing-cards {
     grid-template-columns: 1fr;
+  }
+
+  .cta {
+    margin: 1rem 1rem 3rem;
+    padding: 4rem 1.5rem;
+  }
+
+  .cta-title {
+    font-size: 2rem;
   }
 }
