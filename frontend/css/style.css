@@ -11,11 +11,16 @@ body {
 }
 
 nav {
+  background-color: #f5ede3;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2.5rem;
   white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #eee5dc;
 }
 
 .nav-links {
@@ -541,7 +546,7 @@ footer {
 
   nav.menu-open .nav-links a:hover,
   nav.menu-open .nav-buttons a:hover {
-    background-color: #f5f0eb;
+    background-color: #dbd4cd;
   }
 
   nav.menu-open .nav-links {
