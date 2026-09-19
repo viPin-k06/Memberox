@@ -113,12 +113,12 @@ nav {
 
 .password-error {
   margin: -0.5rem 0 1rem;
-  color: #d64545;
+  color: #b91c1c;
   font-size: 0.9rem;
 }
 
 .input-error {
-  border-color: #d64545 !important;
+  border-color: #b91c1c !important;
 }
 
 .nav-links {
