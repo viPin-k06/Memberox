@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memberox | Login</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="login-page">
+      <div class="login-container">
+        <div class="logo">Memberox</div>
+        <h1>Welcome back</h1>
+        <form id="login-form" action="">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="email"
+          />
+
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            autocomplete="current-password"
+          />
+
+          <a href="#" class="forgot-password">Forgot password?</a>
+
+          <button type="submit">Log In</button>
+
+          <p class="signup-link">
+            Don't have an account? <a href="signup.html">Sign up</a>
+          </p>
+        </form>
+      </div>
+    </main>
+    <script src="js/script.js"></script>
+  </body>
+</html>

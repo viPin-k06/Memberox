@@ -4,6 +4,9 @@ const signupForm = document.querySelector("#signup-form");
 const password = document.querySelector("#password");
 const confirmPassword = document.querySelector("#confirm-password");
 const passwordError = document.querySelector(".password-error");
+const loginForm = document.querySelector("#login-form");
+const loginEmail = document.querySelector("#email");
+const loginPassword = document.querySelector("#password");
 
 if (menuToggle) {
   menuToggle.addEventListener("click", () => {
@@ -36,5 +39,22 @@ if (signupForm) {
     passwordError.textContent = "";
     confirmPassword.classList.remove("input-error");
     alert("Account created successfully!");
+  });
+}
+
+if (loginForm) {
+  loginForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (loginEmail.value.trim() === "") {
+      // alert("Please enter your email.");
+      return;
+    }
+
+    if (loginPassword.value.length < 8) {
+      // alert("Password must be at least 8 characters.");
+      return;
+    }
+
+    // alert("login successfull!");
   });
 }
