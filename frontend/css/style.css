@@ -5,13 +5,13 @@
 }
 
 body {
-  background-color: #fffaf5;
+  background-color: #F5F5FA;
   color: #1f1f1f;
   font-family: sans-serif;
 }
 
 nav {
-  background-color: #f5ede3;
+  background-color: #EDEBF7;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,7 +20,7 @@ nav {
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid #eee5dc;
+  border-bottom: 1px solid #E5E4EE;
 }
 
 .signup-page,
@@ -86,7 +86,7 @@ nav {
   padding: 0.8rem;
   border: none;
   border-radius: 0.5rem;
-  background-color: #ee7219;
+  background-color: #7C3AED;
   color: #ffffff;
   font-size: 1rem;
   font-weight: 600;
@@ -100,17 +100,17 @@ nav {
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #ee7219;
+  color: #7C3AED;
   text-decoration: none;
 }
 
 .forgot-password:hover {
-  color: #ce6011;
+  color: #6D28D9;
 }
 
 .signup-container button:hover,
 .login-container button:hover {
-  background-color: #ce6011;
+  background-color: #6D28D9;
 }
 
 .login-link,
@@ -128,8 +128,8 @@ nav {
 .signup-container input:focus,
 .login-container input:focus {
   outline: none;
-  border-color: #ee7219;
-  box-shadow: 0 0 0 2px rgba(238, 114, 25, 0.15);
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
 }
 
 .signup-container .logo,
@@ -183,18 +183,18 @@ nav {
   border-radius: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
-  background-color: #ee7219;
+  background-color: #7C3AED;
   color: white;
   transition: background-color 0.2s ease;
 }
 
 .nav-buttons button:hover {
-  background-color: #ce6011;
+  background-color: #6D28D9;
 }
 
 .nav-links a:hover,
 .nav-buttons a:hover {
-  color: #ee7219;
+  color: #7C3AED;
 }
 
 .hero {
@@ -205,7 +205,7 @@ nav {
 .hero-label {
   font-size: 1rem;
   font-weight: 600;
-  color: #ee7219;
+  color: #7C3AED;
   margin-bottom: 1rem;
 }
 
@@ -226,7 +226,7 @@ nav {
 
 .hero-button {
   padding: 0.8rem 1.6rem;
-  background-color: #ee7219;
+  background-color: #7C3AED;
   color: #ffffff;
   border: none;
   border-radius: 0.5rem;
@@ -239,7 +239,7 @@ nav {
 }
 
 .hero-button:hover {
-  background-color: #ce6011;
+  background-color: #6D28D9;
   transform: translateY(-2px);
 }
 
@@ -251,7 +251,7 @@ nav {
 .features-label {
   font-size: 1rem;
   font-weight: 600;
-  color: #ee7219;
+  color: #7C3AED;
   margin-bottom: 1rem;
 }
 
@@ -312,7 +312,7 @@ nav {
 .how-label {
   font-size: 1rem;
   font-weight: 600;
-  color: #ee7219;
+  color: #7C3AED;
   margin-bottom: 1rem;
 }
 
@@ -344,7 +344,7 @@ nav {
   height: 3rem;
   margin-bottom: 1.25rem;
   border-radius: 50%;
-  background-color: #ee7219;
+  background-color: #7C3AED;
   color: #ffffff;
   font-weight: 700;
 }
@@ -369,7 +369,7 @@ nav {
 .pricing-label {
   font-size: 1rem;
   font-weight: 600;
-  color: #ee7219;
+  color: #7C3AED;
   margin-bottom: 1rem;
 }
 
@@ -441,7 +441,7 @@ nav {
   padding: 0.8rem;
   border: none;
   border-radius: 0.5rem;
-  background-color: #ee7219;
+  background-color: #7C3AED;
   color: #ffffff;
   font-size: 1rem;
   font-weight: 600;
@@ -449,7 +449,7 @@ nav {
 }
 
 .pricing-card.featured {
-  border: 2px solid #ee7219;
+  border: 2px solid #7C3AED;
 }
 
 .cta {
@@ -464,7 +464,7 @@ nav {
 .cta-label {
   font-size: 1rem;
   font-weight: 600;
-  color: #ee7219;
+  color: #7C3AED;
   margin-bottom: 1rem;
 }
 
@@ -485,7 +485,7 @@ nav {
   padding: 0.8rem 1.6rem;
   border: none;
   border-radius: 0.5rem;
-  background-color: #ee7219;
+  background-color: #7C3AED;
   color: #ffffff;
   font-size: 1rem;
   font-weight: 600;
@@ -496,7 +496,7 @@ nav {
 }
 
 .cta-button:hover {
-  background-color: #ce6011;
+  background-color: #6D28D9;
   transform: translateY(-2px);
 }
 
@@ -550,7 +550,7 @@ footer {
 }
 
 .footer-links a:hover {
-  color: #ee7219;
+  color: #7C3AED;
 }
 
 .footer-bottom {
@@ -572,7 +572,7 @@ footer {
 }
 
 .menu-toggle:hover {
-  color: #ee7219;
+  color: #7C3AED;
 }
 
 .nav-header {
@@ -669,13 +669,13 @@ footer {
   nav.menu-open .nav-buttons a {
     width: 100%;
     padding: 0.2rem;
-    border-bottom: 2px solid #e5ddd4;
+    border-bottom: 2px solid #DAD6EF;
     transition: background-color 0.2s ease;
   }
 
   nav.menu-open .nav-links a:hover,
   nav.menu-open .nav-buttons a:hover {
-    background-color: #dbd4cd;
+    background-color: #D1CCE8;
   }
 
   nav.menu-open .nav-links {
