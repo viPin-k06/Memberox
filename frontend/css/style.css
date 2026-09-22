@@ -757,6 +757,7 @@ footer {
 }
 
 .outstanding-summary strong {
+  color: var(--error);
   display: block;
   font-size: 2rem;
   margin-bottom: 0.5rem;
@@ -765,11 +766,23 @@ footer {
 .outstanding-summary p {
   color: var(--text-secondary);
   font-size: 0.9rem;
+  margin-top: 0.25rem;
 }
 
 .membership-summary {
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
+}
+
+.membership-summary > div {
+  flex: 1;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.membership-summary > div:last-child {
+  border-right: none;
 }
 
 .membership-summary strong {
@@ -803,6 +816,7 @@ footer {
 
 .payment-item > span {
   font-weight: 600;
+  color: var(--text);
 }
 
 .expiry-item {
@@ -828,6 +842,13 @@ footer {
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.4rem;
+  transition: background-color 0.2s ease;
+}
+
+.expiry-item > span:hover {
+  background-color: var(--nav-hover-bg);
 }
 
 .logo-mobile {
@@ -1007,5 +1028,13 @@ footer {
     display: block;
     font-size: 1.5rem;
     text-align: center;
+  }
+
+  .membership-summary {
+    gap: 0.5rem;
+  }
+
+  .payment-item {
+    gap: 1rem;
   }
 }
