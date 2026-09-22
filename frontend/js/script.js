@@ -1,3 +1,5 @@
+console.log("script.js loaded");
+
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelectorAll(".nav-links a");
 const signupForm = document.querySelector("#signup-form");
@@ -7,6 +9,7 @@ const passwordError = document.querySelector(".password-error");
 const loginForm = document.querySelector("#login-form");
 const loginEmail = document.querySelector("#email");
 const loginPassword = document.querySelector("#password");
+const revenueChart = document.querySelector("#revenue-chart");
 
 if (menuToggle) {
   menuToggle.addEventListener("click", () => {
@@ -58,3 +61,75 @@ if (loginForm) {
     // alert("login successfull!");
   });
 }
+
+if (revenueChart) {
+  new Chart(revenueChart, {
+    type: "line",
+
+    data: {
+      labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep"],
+
+      datasets: [
+        {
+          label: "Revenue",
+          data: [85000, 102000, 94000, 118000, 110000, 124500],
+          tension: 0.4,
+          pointRadius: 0,
+          pointHitRadius: 30,
+          pointHoverRadius: 5,
+          borderColor: "#7c3aed",
+          borderWidth: 3,
+        },
+      ],
+    },
+
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return "₹" + context.parsed.y.toLocaleString("en-IN");
+            },
+          },
+        },
+      },
+
+      layout: {
+        padding: {
+          left: 5,
+        },
+      },
+
+      scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+        },
+
+        y: {
+          border: {
+            display: false,
+          },
+
+          grid: {
+            color: "#eeeeee",
+          },
+          ticks: {
+            callback: function (value) {
+              return "₹" + value.toLocaleString("en-IN");
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+console.log("Chart code reached");

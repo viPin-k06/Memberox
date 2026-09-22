@@ -718,6 +718,7 @@ footer {
   display: grid;
   grid-template-rows: 1fr 1fr;
   gap: 1.5rem;
+  min-width: 0;
 }
 
 .dashboard-panel {
@@ -725,6 +726,7 @@ footer {
   padding: 1.5rem;
   border: 1px solid var(--border);
   border-radius: 0.75rem;
+  min-width: 0;
 }
 
 .panel-header {
@@ -843,7 +845,7 @@ footer {
   }
 
   .dashboard-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -986,7 +988,7 @@ footer {
   }
 
   .dashboard-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .dashboard-main {
