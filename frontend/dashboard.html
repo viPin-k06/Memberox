@@ -8,6 +8,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css"
     />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -92,28 +93,45 @@
               <strong>₹1,24,500</strong>
               <p>Monthly revenue</p>
             </div>
+            <div class="revenue-chart">
+              <canvas id="revenue-chart"></canvas>
+            </div>
           </div>
 
-          <div class="dashboard-panel">
-            <div class="panel-header">
-              <h2>Memberships</h2>
-              <span>Current</span>
+          <div class="dashboard-side">
+            <div class="dashboard-panel">
+              <div class="panel-header">
+                <h2>Memberships</h2>
+                <span>Current</span>
+              </div>
+
+              <div class="membership-summary">
+                <div>
+                  <strong>214</strong>
+                  <p>Active</p>
+                </div>
+
+                <div>
+                  <strong>22</strong>
+                  <p>Expiring soon</p>
+                </div>
+
+                <div>
+                  <strong>12</strong>
+                  <p>Expired</p>
+                </div>
+              </div>
             </div>
 
-            <div class="membership-summary">
-              <div>
-                <strong>214</strong>
-                <p>Active</p>
+            <div class="dashboard-panel">
+              <div class="panel-header">
+                <h2>Outstanding Payments</h2>
+                <span>View all</span>
               </div>
 
-              <div>
-                <strong>22</strong>
-                <p>Expiring soon</p>
-              </div>
-
-              <div>
-                <strong>12</strong>
-                <p>Expired</p>
+              <div class="outstanding-summary">
+                <strong>₹8,450</strong>
+                <p>3 payments overdue</p>
               </div>
             </div>
           </div>

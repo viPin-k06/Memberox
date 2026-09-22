@@ -708,8 +708,15 @@ footer {
 
 .dashboard-grid {
   display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1.5rem;
   align-items: stretch;
-  grid-template-columns: repeat(2, 1fr);
+}
+
+.dashboard-side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
   gap: 1.5rem;
 }
 
@@ -743,6 +750,17 @@ footer {
 }
 
 .revenue-summary p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.outstanding-summary strong {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.outstanding-summary p {
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
@@ -812,6 +830,11 @@ footer {
 
 .logo-mobile {
   display: none;
+}
+
+.revenue-chart {
+  height: 15rem;
+  margin-top: 2rem;
 }
 
 @media (max-width: 1000px) {
