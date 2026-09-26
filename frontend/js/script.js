@@ -10,6 +10,17 @@ const loginForm = document.querySelector("#login-form");
 const loginEmail = document.querySelector("#email");
 const loginPassword = document.querySelector("#password");
 const revenueChart = document.querySelector("#revenue-chart");
+const memberSearchInput = document.querySelector("#member-search-input");
+const memberFilterBtn = document.querySelector(".member-filter-btn");
+const filterMenu = document.querySelector(".filter-menu");
+const filterButtons = document.querySelectorAll(".filter-menu button");
+const addMemberBtn = document.querySelector(".add-member-btn");
+const memberModal = document.querySelector("#member-modal");
+const memberModalClose = document.querySelector(".member-modal-close");
+const addMemberForm = document.querySelector("#add-member-form");
+const memberNameInput = document.querySelector("#member-name");
+const memberMembershipInput = document.querySelector("#member-membership");
+const memberJoiningDateInput = document.querySelector("#member-joining-date");
 
 if (menuToggle) {
   menuToggle.addEventListener("click", () => {
@@ -132,4 +143,160 @@ if (revenueChart) {
   });
 }
 
-console.log("Chart code reached");
+let selectedStatus = "all";
+
+function filterMembers() {
+  const searchValue = memberSearchInput.value.toLowerCase();
+
+  // Desktop table
+  const memberRows = document.querySelectorAll(".members-table tbody tr");
+
+  memberRows.forEach((row) => {
+    const memberName = row.children[0].textContent.toLowerCase();
+    const memberStatus = row.children[2].textContent.toLowerCase();
+
+    const matchesName = memberName.includes(searchValue);
+    const matchesStatus =
+      selectedStatus === "all" || memberStatus === selectedStatus;
+
+    if (matchesName && matchesStatus) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+
+  // Mobile cards
+  const mobileCards = document.querySelectorAll(".member-mobile-card");
+
+  mobileCards.forEach((card) => {
+    const memberName = card
+      .querySelector(".member-mobile-info strong")
+      .textContent.toLowerCase();
+
+    const memberStatus = card.dataset.status;
+
+    const matchesName = memberName.includes(searchValue);
+    const matchesStatus =
+      selectedStatus === "all" || memberStatus === selectedStatus;
+
+    if (matchesName && matchesStatus) {
+      card.style.display = "";
+    } else {
+      card.style.display = "none";
+    }
+  });
+}
+
+if (memberSearchInput) {
+  memberSearchInput.addEventListener("input", filterMembers);
+}
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedStatus = button.dataset.status;
+
+    filterMembers();
+
+    filterMenu.classList.remove("show");
+  });
+});
+
+if (memberFilterBtn && filterMenu) {
+  memberFilterBtn.addEventListener("click", () => {
+    filterMenu.classList.toggle("show");
+  });
+}
+
+if (addMemberBtn && memberModal) {
+  addMemberBtn.addEventListener("click", () => {
+    memberModal.classList.add("show");
+  });
+}
+
+if (memberModalClose && memberModal) {
+  memberModalClose.addEventListener("click", () => {
+    memberModal.classList.remove("show");
+  });
+}
+if (addMemberForm) {
+  addMemberForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const name = memberNameInput.value.trim();
+    const membership = memberMembershipInput.value;
+    const joiningDate = new Date(memberJoiningDateInput.value);
+
+    const expiryDate = new Date(joiningDate);
+
+    expiryDate.setMonth(expiryDate.getMonth() + 1);
+
+    const membersTableBody = document.querySelector(".members-table tbody");
+
+    const newRow = document.createElement("tr");
+
+    newRow.innerHTML = `
+      <td>${name}</td>
+      <td>${membership}</td>
+      <td><span class="status status-active">Active</span></td>
+      <td>${expiryDate.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })}</td>
+      <td>
+        <button class="member-action-btn">
+          <i class="fa-solid fa-ellipsis"></i>
+        </button>
+      </td>
+    `;
+
+    membersTableBody.appendChild(newRow);
+
+    const mobileList = document.querySelector(".members-mobile-list");
+
+    const initials = name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase();
+
+    const formattedExpiry = expiryDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+    const newCard = document.createElement("div");
+
+    newCard.classList.add("member-mobile-card");
+    newCard.dataset.status = "active";
+
+    newCard.innerHTML = `
+  <div class="member-avatar">${initials}</div>
+
+  <div class="member-mobile-info">
+    <strong>${name}</strong>
+    <p>${membership}</p>
+  </div>
+
+  <div class="member-mobile-details">
+    <span class="status status-active">Active</span>
+
+    <div class="member-mobile-expiry">
+      <i class="fa-regular fa-calendar"></i>
+      <span>${formattedExpiry}</span>
+    </div>
+  </div>
+
+  <button class="member-action-btn">
+    <i class="fa-solid fa-ellipsis-vertical"></i>
+  </button>s
+`;
+
+    mobileList.appendChild(newCard);
+
+    memberModal.classList.remove("show");
+    addMemberForm.reset();
+  });
+}

@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Members | Memberox</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css"
+    />
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="dashboard">
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <span class="logo-full">Memberox</span>
+          <span class="logo-mobile">M</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="dashboard.html">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Overview</span>
+          </a>
+
+          <a href="members.html" class="active">
+            <i class="fa-solid fa-users"></i>
+            <span>Members</span>
+          </a>
+
+          <a href="#">
+            <i class="fa-solid fa-id-card"></i>
+            <span>Memberships</span>
+          </a>
+
+          <a href="#">
+            <i class="fa-solid fa-credit-card"></i>
+            <span>Payments</span>
+          </a>
+
+          <a href="#">
+            <i class="fa-solid fa-bell"></i>
+            <span>Reminders</span>
+          </a>
+
+          <a href="#">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="dashboard-main">
+        <div class="members-header">
+          <div>
+            <h1>Members</h1>
+            <p>Manage your members and their memberships.</p>
+          </div>
+
+          <button class="add-member-btn">
+            <i class="fa-solid fa-plus"></i>
+            Add Member
+          </button>
+        </div>
+
+        <div class="members-toolbar">
+          <div class="member-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="text"
+              id="member-search-input"
+              placeholder="Search members..."
+            />
+          </div>
+
+          <div class="member-filter">
+            <button class="member-filter-btn">
+              <i class="fa-solid fa-filter"></i>
+              Filter
+            </button>
+
+            <div class="filter-menu">
+              <button data-status="all">All</button>
+              <button data-status="active">Active</button>
+              <button data-status="expiring">Expiring</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="members-table-wrapper">
+          <table class="members-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Membership</th>
+                <th>Status</th>
+                <th>Expiry</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Rahul Sharma</td>
+                <td>Premium</td>
+                <td><span class="status status-active">Active</span></td>
+                <td>12 Oct 2026</td>
+                <td>
+                  <button class="member-action-btn">
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Priya Singh</td>
+                <td>Basic</td>
+                <td><span class="status status-expiring">Expiring</span></td>
+                <td>18 Oct 2026</td>
+                <td>
+                  <button class="member-action-btn">
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Amit Kumar</td>
+                <td>Premium</td>
+                <td><span class="status status-expiring">Expiring</span></td>
+                <td>5 Oct 2026</td>
+                <td>
+                  <button class="member-action-btn">
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="members-mobile-list">
+          <div class="member-mobile-card" data-status="active">
+            <div class="member-avatar">RS</div>
+
+            <div class="member-mobile-info">
+              <strong>Rahul Sharma</strong>
+              <p>Premium</p>
+            </div>
+
+            <div class="member-mobile-details">
+              <span class="status status-active">Active</span>
+
+              <div class="member-mobile-expiry">
+                <i class="fa-regular fa-calendar"></i>
+                <span>12 Oct 2026</span>
+              </div>
+            </div>
+
+            <button class="member-action-btn">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+          </div>
+
+          <div class="member-mobile-card" data-status="expiring">
+            <div class="member-avatar">PS</div>
+
+            <div class="member-mobile-info">
+              <strong>Priya Singh</strong>
+              <p>Basic</p>
+            </div>
+
+            <div class="member-mobile-details">
+              <span class="status status-expiring">Expiring</span>
+
+              <div class="member-mobile-expiry">
+                <i class="fa-regular fa-calendar"></i>
+                <span>18 Oct 2026</span>
+              </div>
+            </div>
+
+            <button class="member-action-btn">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+          </div>
+
+          <div class="member-mobile-card" data-status="expiring">
+            <div class="member-avatar">AK</div>
+
+            <div class="member-mobile-info">
+              <strong>Amit Kumar</strong>
+              <p>Premium</p>
+            </div>
+
+            <div class="member-mobile-details">
+              <span class="status status-expiring">Expiring</span>
+
+              <div class="member-mobile-expiry">
+                <i class="fa-regular fa-calendar"></i>
+                <span>5 Oct 2026</span>
+              </div>
+            </div>
+
+            <button class="member-action-btn">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="member-modal" id="member-modal">
+      <div class="member-modal-content">
+        <div class="member-modal-header">
+          <h2>Add Member</h2>
+
+          <button class="member-modal-close" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form id="add-member-form">
+          <label for="member-name">Name</label>
+          <input type="text" id="member-name" required />
+
+          <label for="member-membership">Membership</label>
+          <select id="member-membership" required>
+            <option value="">Select membership</option>
+            <option value="Basic">Basic</option>
+            <option value="Premium">Premium</option>
+          </select>
+
+          <label for="member-joining-date">Joining date</label>
+          <input type="date" id="member-joining-date" required />
+
+          <button type="submit" class="member-submit-btn">Add Member</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
