@@ -291,7 +291,7 @@ if (addMemberForm) {
 
   <button class="member-action-btn">
     <i class="fa-solid fa-ellipsis-vertical"></i>
-  </button>s
+  </button>
 `;
 
     mobileList.appendChild(newCard);
