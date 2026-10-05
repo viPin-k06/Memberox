@@ -1,0 +1,35 @@
+:root {
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+
+  --background: #f5f5fa;
+  --nav-background: #edebf7;
+
+  --text: #1f1f1f;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --text-on-dark: #cccccc;
+
+  --white: #ffffff;
+
+  --border: #eeeeee;
+  --input-border: #dddddd;
+  --nav-border: #e5e4ee;
+  --nav-border-hover: #dad6ef;
+  --nav-hover-bg: #d1cce8;
+  --dark-border: #444444;
+
+  --error: #b91c1c;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  font-family: sans-serif;
+}
