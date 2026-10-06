@@ -39,3 +39,52 @@
 .signupButton:hover {
   background-color: var(--primary-hover);
 }
+
+.menuToggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+  }
+
+  .menuToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navLinks {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 1rem 0rem;
+    background-color: var(--nav-background);
+    border-top: 1px solid var(--border);
+  }
+
+  .signupButton:hover {
+    color: var(--text);
+  }
+
+  .navLinks a:hover {
+    background-color: var(--nav-hover-bg);
+  }
+
+  .navLinksOpen a {
+    width: 100%;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--nav-border-hover);
+  }
+
+  .navLinksOpen {
+    display: flex;
+  }
+}

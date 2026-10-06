@@ -1,12 +1,14 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import styles from "./Sidebar.module.css";
 import {
-  ChartLine,
   Users,
   IdCard,
   CreditCard,
   Bell,
   Settings,
+  Wallet,
+  ChartSpline,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -19,35 +21,61 @@ const Sidebar = () => {
         </div>
 
         <nav className={styles.sidebarNav}>
-          <a href="#" className={styles.active}>
-            <ChartLine />
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
+            <ChartSpline />
             <span>Overview</span>
-          </a>
+          </NavLink>
 
-          <a href="#">
+          <NavLink
+            to="/members"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
             <Users />
             <span>Members</span>
-          </a>
+          </NavLink>
 
-          <a href="#">
+          <NavLink
+            to="/memberships"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
             <IdCard />
             <span>Memberships</span>
-          </a>
+          </NavLink>
 
-          <a href="#">
+          <NavLink
+            to="/revenue"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
+            <Wallet />
+            <span>Revenue</span>
+          </NavLink>
+
+          <NavLink
+            to="/payments"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
             <CreditCard />
             <span>Payments</span>
-          </a>
+          </NavLink>
 
-          <a href="#">
+          <NavLink
+            to="/reminders"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
             <Bell />
             <span>Reminders</span>
-          </a>
+          </NavLink>
 
-          <a href="#">
+          <NavLink
+            to="/settings"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
             <Settings />
             <span>Settings</span>
-          </a>
+          </NavLink>
         </nav>
       </aside>
     </div>

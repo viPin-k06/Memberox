@@ -42,9 +42,141 @@
   font-weight: 700;
 }
 
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-bottom: 1.5rem;
+}
+
+.dashboardSide {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.dashboardPanel {
+  background-color: var(--white);
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  min-width: 0;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.panelHeader h2 {
+  font-size: 1.2rem;
+}
+
+.panelHeader span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.revenueSummary strong,
+.outstandingSummary strong {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.revenueSummary p,
+.outstandingSummary p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.outstandingSummary strong {
+  color: var(--error);
+}
+
+.membershipSummary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.membershipSummary > div {
+  flex: 1;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.membershipSummary > div:last-child {
+  border-right: none;
+}
+
+.membershipSummary strong {
+  display: block;
+  font-size: 1.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.membershipSummary p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.revenueChart {
+  height: 15rem;
+  margin-top: 2rem;
+}
+
+.paymentItem,
+.expiryItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.paymentItem strong,
+.expiryItem strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.paymentItem p,
+.expiryItem p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.paymentItem > span {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.expiryItem > span {
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.4rem;
+  transition: background-color 0.2s ease;
+}
+
+.expiryItem > span:hover {
+  background-color: var(--nav-hover-bg);
+}
+
 @media (max-width: 1000px) {
   .stats {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboardGrid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -55,5 +187,13 @@
 
   .dashboardMain {
     padding: 1rem;
+  }
+
+  .dashboardGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .membershipSummary {
+    gap: 0.5rem;
   }
 }

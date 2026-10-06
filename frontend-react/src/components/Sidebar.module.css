@@ -56,7 +56,7 @@
 
 @media (max-width: 768px) {
   .sidebar {
-    padding: 1rem 0;
+    padding: 1rem 0.5rem;
   }
 
   .sidebarNav {
@@ -70,8 +70,10 @@
 
   .sidebarNav a {
     justify-content: center;
-    padding: 0.75rem;
-    width: 100%;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin: 0 auto;
   }
 
   .sidebarNav a span {
