@@ -1,0 +1,60 @@
+.howItWorks {
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.howLabel {
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.howTitle {
+  max-width: 42rem;
+  margin: 0 auto 3rem;
+  font-size: 2rem;
+  color: var(--text);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 70rem;
+  margin: 0 auto;
+}
+
+.step {
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: left;
+}
+
+.stepNumber {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.step h3 {
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+
+.step p {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .howItWorks {
+    padding: 4rem 1rem;
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}

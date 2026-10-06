@@ -1,0 +1,91 @@
+.pricing {
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.pricingLabel {
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.pricingTitle {
+  max-width: 42rem;
+  margin: 0 auto 1rem;
+  font-size: 2rem;
+  color: var(--text);
+}
+
+.pricingDescription {
+  max-width: 42rem;
+  margin: 0 auto 3rem;
+  color: var(--text-secondary);
+}
+
+.pricingCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  max-width: 55rem;
+  margin: 0 auto;
+}
+
+.pricingCard {
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: left;
+}
+
+.featured {
+  border-color: var(--primary);
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 1rem 0;
+  color: var(--text);
+}
+
+.price span {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.pricingCard ul {
+  margin: 1.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.pricingCard li {
+  margin-bottom: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.pricingCard button {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--primary);
+  color: var(--white);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pricingCard button:hover {
+  background-color: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  .pricing {
+    padding: 4rem 1rem;
+  }
+
+  .pricingCards {
+    grid-template-columns: 1fr;
+  }
+}

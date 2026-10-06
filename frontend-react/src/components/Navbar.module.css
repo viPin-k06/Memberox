@@ -1,0 +1,41 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: var(--nav-background);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navLinks a {
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.navLinks a:hover {
+  color: var(--primary);
+}
+
+.signupButton {
+  background-color: var(--primary);
+  color: var(--white) !important;
+  padding: 0.7rem 1.1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.signupButton:hover {
+  background-color: var(--primary-hover);
+}

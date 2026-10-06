@@ -2,15 +2,10 @@ import React from "react";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import styles from "./App.module.css";
+import Landing from "./pages/Landing";
 
 const App = () => {
-  return (
-    <div className={styles.dashboard}>
-      <Sidebar />
-
-      <Dashboard />
-    </div>
-  );
+  return <Landing />;
 };
 
 export default App;
