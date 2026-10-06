@@ -1,0 +1,90 @@
+.sidebar {
+  background-color: var(--nav-background);
+  border-right: 1px solid var(--nav-border);
+  padding: 2rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebarLogo {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.sidebarNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebarNav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebarNav svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.sidebarNav a:hover {
+  background-color: var(--nav-hover-bg);
+  color: var(--text);
+}
+
+.sidebarNav a.active {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+.logoMobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    padding: 1rem 0;
+  }
+
+  .sidebarNav {
+    gap: 1.5rem;
+  }
+
+  .sidebarNav svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .sidebarNav a {
+    justify-content: center;
+    padding: 0.75rem;
+    width: 100%;
+  }
+
+  .sidebarNav a span {
+    display: none;
+  }
+
+  .logoFull {
+    display: none;
+  }
+
+  .logoMobile {
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+}

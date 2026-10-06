@@ -1,0 +1,11 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: 15rem 1fr;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 4rem 1fr;
+  }
+}

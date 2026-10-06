@@ -1,11 +1,16 @@
-import React from 'react'
+import React from "react";
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./pages/Dashboard";
+import styles from "./App.module.css";
 
 const App = () => {
   return (
-    <div>
-      <h1>Memberox</h1>
-    </div>
-  )
-}
+    <div className={styles.dashboard}>
+      <Sidebar />
 
-export default App
+      <Dashboard />
+    </div>
+  );
+};
+
+export default App;
