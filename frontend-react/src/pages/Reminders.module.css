@@ -1,0 +1,182 @@
+.page {
+  width: 100%;
+  min-width: 0;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.35rem;
+}
+
+.header p {
+  color: var(--text-secondary);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.1rem;
+  color: var(--primary);
+}
+
+.statCard div {
+  display: flex;
+  flex-direction: column;
+}
+
+.statCard span {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.statCard strong {
+  color: var(--text);
+  font-size: 1.4rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.toolbar button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  background-color: var(--white);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.toolbar .activeFilter {
+  border-color: var(--primary);
+  background-color: var(--nav-background);
+  color: var(--primary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.avatar {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: var(--nav-background);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.info > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.info span,
+.info small,
+.channel {
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.pendingBadge,
+.sentBadge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.pendingBadge {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.sentBadge {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.actions button {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--primary);
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background-color: var(--primary-hover);
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}

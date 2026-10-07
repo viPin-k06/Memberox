@@ -1,0 +1,234 @@
+.page {
+  width: 100%;
+  min-width: 0;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.35rem;
+}
+
+.header p {
+  color: var(--text-secondary);
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--primary);
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryBtn:hover,
+.submitBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard,
+.planCard {
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.statCard {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.statCard span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.statCard strong {
+  font-size: 1.8rem;
+}
+
+.planGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.planCard {
+  padding: 1.25rem;
+}
+
+.planHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.planHeader h2 {
+  margin-bottom: 0.35rem;
+}
+
+.planHeader p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.cardActions button {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background-color: var(--white);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.cardActions button:hover {
+  background-color: var(--nav-background);
+  color: var(--primary);
+}
+
+.memberCount {
+  margin: 1rem 0;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.priceList {
+  display: flex;
+  flex-direction: column;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.priceRow span {
+  color: var(--text-secondary);
+}
+
+.emptyState {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+.modal {
+  width: 100%;
+  max-width: 30rem;
+  background-color: var(--white);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.modalHeader button {
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.modal input,
+.modal textarea {
+  width: 100%;
+  border: 1px solid var(--input-border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font: inherit;
+  color: var(--text);
+  background-color: var(--white);
+}
+
+.submitBtn {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.8rem 1rem;
+  background-color: var(--primary);
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primaryBtn {
+    justify-content: center;
+  }
+
+  .stats,
+  .planGrid {
+    grid-template-columns: 1fr;
+  }
+}
