@@ -112,8 +112,7 @@
 }
 
 .info span,
-.info small,
-.channel {
+.info small {
   color: var(--text-secondary);
 }
 

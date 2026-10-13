@@ -8,8 +8,6 @@ const Settings = () => {
   const [email, setEmail] = useState("owner@example.com");
 
   const [whatsapp, setWhatsapp] = useState(true);
-  const [sms, setSms] = useState(false);
-  const [emailReminders, setEmailReminders] = useState(true);
   const [daysBefore, setDaysBefore] = useState("3");
 
   const [message, setMessage] = useState("");
@@ -88,7 +86,7 @@ const Settings = () => {
       <section className={styles.card}>
         <div className={styles.sectionHeader}>
           <h2>Reminder Preferences</h2>
-          <p>Choose how expiry reminders should be delivered.</p>
+          <p>Choose when expiry reminders should be sent on WhatsApp.</p>
         </div>
 
         <form className={styles.preferenceForm} onSubmit={saveNotifications}>
@@ -100,34 +98,9 @@ const Settings = () => {
 
             <input
               type="checkbox"
+              aria-label="WhatsApp reminders"
               checked={whatsapp}
               onChange={(event) => setWhatsapp(event.target.checked)}
-            />
-          </div>
-
-          <div className={styles.toggleRow}>
-            <div>
-              <strong>SMS reminders</strong>
-              <span>Send expiry reminders through SMS.</span>
-            </div>
-
-            <input
-              type="checkbox"
-              checked={sms}
-              onChange={(event) => setSms(event.target.checked)}
-            />
-          </div>
-
-          <div className={styles.toggleRow}>
-            <div>
-              <strong>Email reminders</strong>
-              <span>Send expiry reminders through email.</span>
-            </div>
-
-            <input
-              type="checkbox"
-              checked={emailReminders}
-              onChange={(event) => setEmailReminders(event.target.checked)}
             />
           </div>
 
@@ -136,6 +109,7 @@ const Settings = () => {
             <select
               value={daysBefore}
               onChange={(event) => setDaysBefore(event.target.value)}
+              disabled={!whatsapp}
             >
               <option value="1">1 day before</option>
               <option value="3">3 days before</option>

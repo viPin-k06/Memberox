@@ -9,7 +9,6 @@ const INITIAL_REMINDERS = [
     mobile: "9876543210",
     expiryDate: "2026-10-12",
     status: "Pending",
-    channel: "WhatsApp",
   },
   {
     id: 2,
@@ -17,7 +16,6 @@ const INITIAL_REMINDERS = [
     mobile: "9876543211",
     expiryDate: "2026-10-18",
     status: "Pending",
-    channel: "WhatsApp",
   },
   {
     id: 3,
@@ -25,7 +23,6 @@ const INITIAL_REMINDERS = [
     mobile: "9876543212",
     expiryDate: "2026-10-05",
     status: "Sent",
-    channel: "SMS",
   },
 ];
 
@@ -36,9 +33,20 @@ const formatDate = (date) =>
     year: "numeric",
   });
 
+const getInitials = (name) =>
+  name
+    .split(" ")
+    .map((word) => word[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
 const Reminders = () => {
   const [reminders, setReminders] = useState(INITIAL_REMINDERS);
   const [filter, setFilter] = useState("All");
+
+  const pendingCount = reminders.filter((r) => r.status === "Pending").length;
+  const sentCount = reminders.filter((r) => r.status === "Sent").length;
 
   const filtered = useMemo(
     () =>
@@ -51,9 +59,7 @@ const Reminders = () => {
   const markSent = (id) => {
     setReminders((current) =>
       current.map((reminder) =>
-        reminder.id === id
-          ? { ...reminder, status: "Sent" }
-          : reminder,
+        reminder.id === id ? { ...reminder, status: "Sent" } : reminder,
       ),
     );
   };
@@ -63,7 +69,7 @@ const Reminders = () => {
       <div className={styles.header}>
         <div>
           <h1>Reminders</h1>
-          <p>Keep track of membership expiry reminders.</p>
+          <p>Keep track of membership expiry reminders sent on WhatsApp.</p>
         </div>
       </div>
 
@@ -72,9 +78,7 @@ const Reminders = () => {
           <Bell size={20} />
           <div>
             <span>Pending</span>
-            <strong>
-              {reminders.filter((item) => item.status === "Pending").length}
-            </strong>
+            <strong>{pendingCount}</strong>
           </div>
         </div>
 
@@ -82,9 +86,7 @@ const Reminders = () => {
           <Check size={20} />
           <div>
             <span>Sent</span>
-            <strong>
-              {reminders.filter((item) => item.status === "Sent").length}
-            </strong>
+            <strong>{sentCount}</strong>
           </div>
         </div>
       </section>
@@ -93,6 +95,8 @@ const Reminders = () => {
         {["All", "Pending", "Sent"].map((item) => (
           <button
             key={item}
+            type="button"
+            aria-pressed={filter === item}
             className={filter === item ? styles.activeFilter : ""}
             onClick={() => setFilter(item)}
           >
@@ -106,10 +110,7 @@ const Reminders = () => {
           <article key={reminder.id} className={styles.card}>
             <div className={styles.info}>
               <div className={styles.avatar}>
-                {reminder.member
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")}
+                {getInitials(reminder.member)}
               </div>
 
               <div>
@@ -130,10 +131,8 @@ const Reminders = () => {
                 {reminder.status}
               </span>
 
-              <span className={styles.channel}>{reminder.channel}</span>
-
               {reminder.status === "Pending" && (
-                <button onClick={() => markSent(reminder.id)}>
+                <button type="button" onClick={() => markSent(reminder.id)}>
                   Mark as Sent
                 </button>
               )}
