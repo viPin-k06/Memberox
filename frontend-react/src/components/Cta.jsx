@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Cta.module.css";
+import { Link } from "react-router-dom";
 
 const Cta = () => {
   return (
@@ -14,7 +15,9 @@ const Cta = () => {
         Manage your members, payments, and renewals from one simple place.
       </p>
 
-      <button className={styles.ctaButton}>Get Started</button>
+      <Link to="/signup" className={styles.ctaButton}>
+        Get Started
+      </Link>
     </section>
   );
 };

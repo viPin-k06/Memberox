@@ -25,6 +25,10 @@
 }
 
 .heroButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   background-color: var(--primary);
   color: var(--white);
   border: none;

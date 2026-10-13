@@ -65,7 +65,11 @@
   color: var(--text-secondary);
 }
 
-.pricingCard button {
+.planButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   width: 100%;
   padding: 0.8rem 1rem;
   border: none;
@@ -76,7 +80,7 @@
   transition: background-color 0.2s ease;
 }
 
-.pricingCard button:hover {
+.planButton:hover {
   background-color: var(--primary-hover);
 }
 

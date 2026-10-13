@@ -143,7 +143,11 @@ const addMonths = (isoDate, months) => {
   date.setDate(1);
   date.setMonth(date.getMonth() + months);
 
-  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  const lastDay = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0,
+  ).getDate();
   date.setDate(Math.min(originalDay, lastDay));
 
   return toISODate(date);
@@ -515,7 +519,9 @@ const RenewForm = ({ member, onSubmit, onClose }) => {
                 type="button"
                 aria-pressed={startFrom === "old"}
                 className={
-                  startFrom === "old" ? styles.choiceBtnActive : styles.choiceBtn
+                  startFrom === "old"
+                    ? styles.choiceBtnActive
+                    : styles.choiceBtn
                 }
                 onClick={() => setStartFrom("old")}
               >
@@ -708,7 +714,8 @@ const Members = () => {
 
   const isDuplicateMobile = (mobileNumber, ignoreId) =>
     members.some(
-      (member) => member.id !== ignoreId && member.mobileNumber === mobileNumber,
+      (member) =>
+        member.id !== ignoreId && member.mobileNumber === mobileNumber,
     );
 
   const closeModal = () => setActiveModal(null);
@@ -768,11 +775,14 @@ const Members = () => {
     }));
 
     closeModal();
+    setSelectedId(null);
     return null;
   };
 
   const handleDeleteMember = () => {
-    if (!window.confirm(`Delete ${selectedMember.name}? This can't be undone.`)) {
+    if (
+      !window.confirm(`Delete ${selectedMember.name}? This can't be undone.`)
+    ) {
       return;
     }
 
@@ -785,7 +795,6 @@ const Members = () => {
     const cycleId = createId();
 
     updateMember(selectedId, (member) => {
-
       // Renewal always collects the full fee.
       const payments = [
         ...member.payments,
@@ -811,6 +820,7 @@ const Members = () => {
     });
 
     closeModal();
+    setSelectedId(null);
   };
 
   const handleRowKeyDown = (event, id) => {
@@ -925,7 +935,9 @@ const Members = () => {
             onClick={() => setSelectedId(member.id)}
             onKeyDown={(event) => handleRowKeyDown(event, member.id)}
           >
-            <div className={styles.memberAvatar}>{getInitials(member.name)}</div>
+            <div className={styles.memberAvatar}>
+              {getInitials(member.name)}
+            </div>
 
             <div className={styles.memberMobileInfo}>
               <strong>{member.name}</strong>
