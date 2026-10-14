@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Phone } from "lucide-react";
 import styles from "./Auth.module.css";
+import { supabase } from "../lib/supabase";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ const Signup = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
 
   const inputHandler = (e) => {
     const { name, value } = e.target;
@@ -26,7 +29,7 @@ const Signup = () => {
     }));
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
     const { ownerName, gymName, email, mobile, password } = formData;
@@ -53,9 +56,41 @@ const Signup = () => {
     }
 
     setError("");
+    setSuccess("");
+    setLoading(true);
 
-    // Temporary until backend authentication is connected.
-    navigate("/dashboard");
+    try {
+      const { data, error: signupError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: {
+            full_name: ownerName.trim(),
+            business_name: gymName.trim(),
+            phone: mobile.trim(),
+          },
+        },
+      });
+      if (signupError) {
+        throw signupError;
+      }
+
+      if (!data.user) {
+        throw new Error("Unable to create account. Please try again.");
+      }
+
+      if (!data.session) {
+        setSuccess(
+          "Account Created! Please check your email to confirm your account.",
+        );
+      } else {
+        setSuccess("Account created successfully!");
+      }
+    } catch (err) {
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -110,6 +145,8 @@ const Signup = () => {
 
           <form onSubmit={submitHandler} className={styles.form}>
             {error && <div className={styles.error}>{error}</div>}
+
+            {success && <p role="status">{success}</p>}
 
             <div className={styles.twoColumns}>
               <label className={styles.field}>
@@ -193,8 +230,12 @@ const Signup = () => {
               and Privacy Policy.
             </p>
 
-            <button type="submit" className={styles.submitButton}>
-              Create Account
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={loading}
+            >
+              {loading ? "Creating account..." : "Create Account"}
             </button>
           </form>
 
