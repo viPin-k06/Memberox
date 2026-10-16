@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import styles from "./Auth.module.css";
 import { supabase } from "../lib/supabase";
 
 const Signup = () => {
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     ownerName: "",
-    gymName: "",
+    businessName: "",
+    businessType: "",
     email: "",
     mobile: "",
     password: "",
@@ -32,11 +31,13 @@ const Signup = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    const { ownerName, gymName, email, mobile, password } = formData;
+    const { ownerName, businessName, businessType, email, mobile, password } =
+      formData;
 
     if (
       !ownerName.trim() ||
-      !gymName.trim() ||
+      !businessName.trim() ||
+      !businessType.trim() ||
       !email.trim() ||
       !mobile.trim() ||
       !password.trim()
@@ -66,11 +67,20 @@ const Signup = () => {
         options: {
           data: {
             full_name: ownerName.trim(),
-            business_name: gymName.trim(),
+            business_name: businessName.trim(),
+            organization_type: businessType,
             phone: mobile.trim(),
           },
         },
       });
+
+      console.log("Signup result:", {
+        userId: data?.user?.id,
+        identities: data?.user?.identities,
+        hasSession: Boolean(data?.session),
+        error: signupError?.message,
+      });
+
       if (signupError) {
         throw signupError;
       }
@@ -163,17 +173,36 @@ const Signup = () => {
               </label>
 
               <label className={styles.field}>
-                <span>Gym / business name</span>
+                <span>Business name</span>
 
                 <input
                   type="text"
-                  name="gymName"
-                  placeholder="Your gym name"
-                  value={formData.gymName}
+                  name="businessName"
+                  placeholder="Your business name"
+                  value={formData.businessName}
                   onChange={inputHandler}
                 />
               </label>
             </div>
+
+            <label className={styles.field}>
+              <span>Business type</span>
+
+              <select
+                name="businessType"
+                value={formData.businessType}
+                onChange={inputHandler}
+                required
+              >
+                <option value="">Select business type</option>
+                <option value="gym">Gym / Fitness Center</option>
+                <option value="yoga">Yoga / Pilates Studio</option>
+                <option value="swimming">Swimming Academy</option>
+                <option value="dance">Dance Academy</option>
+                <option value="martial_arts">Martial Arts Academy</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
 
             <label className={styles.field}>
               <span>Email address</span>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import styles from "./Auth.module.css";
+import { supabase } from "../lib/supabase";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,8 +11,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
@@ -20,9 +22,29 @@ const Login = () => {
     }
 
     setError("");
+    setLoading(true);
 
-    // Temporary until backend authentication is connected.
-    navigate("/dashboard");
+    try {
+      const { data, error: loginError } =
+        await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+
+      if (loginError) {
+        throw loginError;
+      }
+
+      if (!data.session) {
+        throw new Error("Unable to log in. Please try again.");
+      }
+
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      setError(err.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -128,14 +150,17 @@ const Login = () => {
               </button>
             </div>
 
-            <button type="submit" className={styles.submitButton}>
-              Log In
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Log In"}
             </button>
           </form>
 
           <p className={styles.switchText}>
-            Don't have an account?{" "}
-            <Link to="/signup">Create an account</Link>
+            Don't have an account? <Link to="/signup">Create an account</Link>
           </p>
         </div>
       </section>
