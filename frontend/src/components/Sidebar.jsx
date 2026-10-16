@@ -1,5 +1,6 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import styles from "./Sidebar.module.css";
 import {
   Users,
@@ -9,9 +10,23 @@ import {
   Settings,
   Wallet,
   ChartSpline,
+  LogOut,
 } from "lucide-react";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const logoutHandler = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Logout failed:", error.message);
+      return;
+    }
+
+    navigate("/login", { replace: true });
+  };
+
   return (
     <div>
       <aside className={styles.sidebar}>
@@ -77,6 +92,14 @@ const Sidebar = () => {
             <span>Settings</span>
           </NavLink>
         </nav>
+        <button
+          type="button"
+          className={styles.logoutButton}
+          onClick={logoutHandler}
+        >
+          <LogOut />
+          <span>Logout</span>
+        </button>
       </aside>
     </div>
   );

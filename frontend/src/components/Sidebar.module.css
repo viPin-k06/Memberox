@@ -54,6 +54,39 @@
   display: none;
 }
 
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  width: 100%;
+  margin-top: auto;
+  padding: 0.875rem 1rem;
+
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: var(--nav-background, #edebf7);
+  color: var(--primary, #7c3aed);
+}
+
+.logoutButton svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
 @media (max-width: 768px) {
   .sidebar {
     padding: 1rem 0.5rem;
@@ -88,5 +121,14 @@
     display: block;
     font-size: 1.5rem;
     text-align: center;
+  }
+  .logoutButton {
+    justify-content: center;
+    padding: 0.875rem 0;
+    gap: 0;
+  }
+
+  .logoutButton span {
+    display: none;
   }
 }

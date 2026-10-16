@@ -1,7 +1,8 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 import Sidebar from "./components/Sidebar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -17,11 +18,11 @@ import Settings from "./pages/Settings";
 
 import styles from "./App.module.css";
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = () => {
   return (
     <div className={styles.dashboardLayout}>
       <Sidebar />
-      {children}
+      <Outlet />
     </div>
   );
 };
@@ -29,74 +30,25 @@ const DashboardLayout = ({ children }) => {
 const App = () => {
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/" element={<Landing />} />
-
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-      <Route
-        path="/dashboard"
-        element={
-          <DashboardLayout>
-            <Dashboard />
-          </DashboardLayout>
-        }
-      />
+      {/* Protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/members" element={<Members />} />
+          <Route path="/memberships" element={<Memberships />} />
+          <Route path="/revenue" element={<Revenue />} />
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/reminders" element={<Reminders />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+      </Route>
 
-      <Route
-        path="/members"
-        element={
-          <DashboardLayout>
-            <Members />
-          </DashboardLayout>
-        }
-      />
-
-      <Route
-        path="/memberships"
-        element={
-          <DashboardLayout>
-            <Memberships />
-          </DashboardLayout>
-        }
-      />
-
-      <Route
-        path="/revenue"
-        element={
-          <DashboardLayout>
-            <Revenue />
-          </DashboardLayout>
-        }
-      />
-
-      <Route
-        path="/payments"
-        element={
-          <DashboardLayout>
-            <Payments />
-          </DashboardLayout>
-        }
-      />
-
-      <Route
-        path="/reminders"
-        element={
-          <DashboardLayout>
-            <Reminders />
-          </DashboardLayout>
-        }
-      />
-
-      <Route
-        path="/settings"
-        element={
-          <DashboardLayout>
-            <Settings />
-          </DashboardLayout>
-        }
-      />
-
+      {/* Fallback route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
