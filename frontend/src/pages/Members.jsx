@@ -1,6 +1,7 @@
-import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Plus, Search, Filter } from "lucide-react";
 import styles from "./Members.module.css";
+import { supabase } from "../lib/supabase";
 
 /* ------------------------------------------------------------------ */
 /* Constants                                                           */
@@ -25,85 +26,9 @@ const STATUS_CLASS = {
   Expired: styles.statusExpired,
 };
 
-// Dates are stored as plain "YYYY-MM-DD" strings (no timezone surprises).
-// `expiry` display strings are derived, never stored.
-const INITIAL_MEMBERS = [
-  {
-    id: "m-1",
-    name: "Rahul Sharma",
-    mobileNumber: "9876543210",
-    email: "rahul@example.com",
-    membership: "Premium",
-    membershipMonths: 3,
-    membershipFee: 2499,
-    joiningDate: "2026-07-12",
-    expiryDate: "2026-10-12",
-    currentCycleId: "rahul-cycle-1",
-    payments: [
-      {
-        id: "p-101",
-        amount: 2499,
-        date: "2026-07-12",
-        mode: "UPI",
-        type: "Joining",
-        membershipMonths: 3,
-        cycleId: "rahul-cycle-1",
-      },
-    ],
-  },
-  {
-    id: "m-2",
-    name: "Priya Singh",
-    mobileNumber: "9876543211",
-    email: "",
-    membership: "Basic",
-    membershipMonths: 1,
-    membershipFee: 999,
-    joiningDate: "2026-09-18",
-    expiryDate: "2026-10-18",
-    currentCycleId: "priya-cycle-1",
-    payments: [
-      {
-        id: "p-102",
-        amount: 999,
-        date: "2026-09-18",
-        mode: "Cash",
-        type: "Joining",
-        membershipMonths: 1,
-        cycleId: "priya-cycle-1",
-      },
-    ],
-  },
-  {
-    id: "m-3",
-    name: "Amit Kumar",
-    mobileNumber: "9876543212",
-    email: "",
-    membership: "Premium",
-    membershipMonths: 6,
-    membershipFee: 4999,
-    joiningDate: "2026-04-05",
-    expiryDate: "2026-10-05",
-    currentCycleId: "amit-cycle-1",
-    payments: [
-      {
-        id: "p-103",
-        amount: 4999,
-        date: "2026-04-05",
-        mode: "Cash",
-        type: "Joining",
-        membershipMonths: 6,
-        cycleId: "amit-cycle-1",
-      },
-    ],
-  },
-];
-
 /* ------------------------------------------------------------------ */
 /* Pure helpers                                                        */
 /* ------------------------------------------------------------------ */
-
-const createId = () => crypto.randomUUID();
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -113,11 +38,11 @@ const toISODate = (date) =>
 const parseDate = (isoDate) => new Date(`${isoDate}T00:00:00`);
 
 const formatDate = (isoDate) =>
-  parseDate(isoDate).toLocaleDateString("en-GB", {
+  isoDate ? parseDate(isoDate).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
-  });
+  }) : "—";
 
 const formatCurrency = (amount) => `₹${amount.toLocaleString("en-IN")}`;
 
@@ -143,17 +68,14 @@ const addMonths = (isoDate, months) => {
   date.setDate(1);
   date.setMonth(date.getMonth() + months);
 
-  const lastDay = new Date(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    0,
-  ).getDate();
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   date.setDate(Math.min(originalDay, lastDay));
 
   return toISODate(date);
 };
 
 const getMemberStatus = (expiryDate) => {
+  if (!expiryDate) return "Expired";
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -172,6 +94,56 @@ const getAmountPaid = (member) =>
   member.payments
     .filter((payment) => payment.cycleId === member.currentCycleId)
     .reduce((total, payment) => total + payment.amount, 0);
+
+// The UI keeps its existing camelCase shape; PostgreSQL uses snake_case.
+const buildMemberView = (memberRows, membershipRows, paymentRows) => {
+  const cyclesByMember = new Map();
+  const cycleById = new Map();
+
+  for (const cycle of membershipRows) {
+    if (!cyclesByMember.has(cycle.member_id)) cyclesByMember.set(cycle.member_id, []);
+    cyclesByMember.get(cycle.member_id).push(cycle);
+    cycleById.set(cycle.id, cycle);
+  }
+
+  const paymentsByMember = new Map();
+  for (const payment of paymentRows) {
+    const cycle = cycleById.get(payment.membership_id);
+    if (!cycle) continue;
+    if (!paymentsByMember.has(payment.member_id)) paymentsByMember.set(payment.member_id, []);
+    paymentsByMember.get(payment.member_id).push({
+      id: payment.id,
+      amount: Number(payment.amount),
+      date: payment.payment_date,
+      mode: payment.payment_mode,
+      type: payment.payment_type,
+      membershipMonths: cycle.duration_months,
+      cycleId: payment.membership_id,
+    });
+  }
+
+  return memberRows.map((row) => {
+    const cycles = (cyclesByMember.get(row.id) || []).sort((a, b) =>
+      a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id),
+    );
+    const current = cycles.at(-1);
+    const joining = cycles.find((cycle) => cycle.renewal_start_type === "joining") || cycles[0];
+
+    return {
+      id: row.id,
+      name: row.name,
+      mobileNumber: row.mobile_number,
+      email: row.email || "",
+      joiningDate: joining?.start_date || row.created_at.slice(0, 10),
+      membership: current?.plan_name || "—",
+      membershipMonths: current?.duration_months || 1,
+      membershipFee: Number(current?.fee || 0),
+      expiryDate: current?.expiry_date || "",
+      currentCycleId: current?.id || null,
+      payments: paymentsByMember.get(row.id) || [],
+    };
+  });
+};
 
 /* ------------------------------------------------------------------ */
 /* Small reusable pieces                                               */
@@ -276,6 +248,7 @@ const MemberForm = ({ mode, initialValues, onSubmit, onClose }) => {
   const isEdit = mode === "edit";
   const [form, bind, setForm] = useForm(initialValues);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   // When adding, the fee follows the selected membership and duration
   // (the owner can still adjust it afterwards).
@@ -296,26 +269,41 @@ const MemberForm = ({ mode, initialValues, onSubmit, onClose }) => {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if (saving) return;
+    setError("");
 
     const mobileNumber = form.mobileNumber.trim();
-
     if (!/^\d{10}$/.test(mobileNumber)) {
       setError("Enter a valid 10-digit mobile number.");
       return;
     }
+    if (!form.name.trim()) {
+      setError("Enter the member's name.");
+      return;
+    }
+    if (!isEdit && Number(form.membershipFee) <= 0) {
+      setError("Membership fee must be greater than zero.");
+      return;
+    }
 
-    const result = onSubmit({
-      ...form,
-      name: form.name.trim(),
-      mobileNumber,
-      email: form.email.trim(),
-      membershipMonths: Number(form.membershipMonths),
-      membershipFee: Number(form.membershipFee) || 0,
-    });
-
-    if (result) setError(result);
+    setSaving(true);
+    try {
+      const result = await onSubmit({
+        ...form,
+        name: form.name.trim(),
+        mobileNumber,
+        email: form.email.trim(),
+        membershipMonths: Number(form.membershipMonths),
+        membershipFee: Number(form.membershipFee) || 0,
+      });
+      if (result) setError(result);
+    } catch (err) {
+      setError(err.message || "Unable to save member.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -411,8 +399,8 @@ const MemberForm = ({ mode, initialValues, onSubmit, onClose }) => {
 
         <FormError message={error} />
 
-        <button type="submit" className={styles.modalSubmitBtn}>
-          {isEdit
+        <button type="submit" disabled={saving} className={styles.modalSubmitBtn}>
+          {saving ? "Saving..." : isEdit
             ? "Save Changes"
             : `Collect ${formatCurrency(Number(form.membershipFee) || 0)} & Add Member`}
         </button>
@@ -431,6 +419,8 @@ const RenewForm = ({ member, onSubmit, onClose }) => {
   });
   // Only used when the membership has already expired: "old" | "payment"
   const [startFrom, setStartFrom] = useState("payment");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   // Fee follows the selected duration (the owner can still adjust it).
   const handleMonthsChange = (event) => {
@@ -457,16 +447,33 @@ const RenewForm = ({ member, onSubmit, onClose }) => {
 
   const stillExpired = Boolean(newExpiry) && newExpiry < form.date;
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if (saving) return;
+    setError("");
+    if (fee <= 0 || !form.date || !startDate || !newExpiry) {
+      setError("Enter a valid renewal date and fee.");
+      return;
+    }
 
-    onSubmit({
-      months: Number(form.months),
-      fee,
-      date: form.date,
-      mode: form.mode,
-      startDate,
-    });
+    setSaving(true);
+    try {
+      const result = await onSubmit({
+        months: Number(form.months),
+        fee,
+        date: form.date,
+        mode: form.mode,
+        startDate,
+        renewalStartType: isExpired
+          ? startFrom === "payment" ? "payment_date" : "old_expiry"
+          : "old_expiry",
+      });
+      if (result) setError(result);
+    } catch (err) {
+      setError(err.message || "Unable to renew membership.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -519,9 +526,7 @@ const RenewForm = ({ member, onSubmit, onClose }) => {
                 type="button"
                 aria-pressed={startFrom === "old"}
                 className={
-                  startFrom === "old"
-                    ? styles.choiceBtnActive
-                    : styles.choiceBtn
+                  startFrom === "old" ? styles.choiceBtnActive : styles.choiceBtn
                 }
                 onClick={() => setStartFrom("old")}
               >
@@ -557,8 +562,10 @@ const RenewForm = ({ member, onSubmit, onClose }) => {
           </p>
         )}
 
-        <button type="submit" className={styles.modalSubmitBtn}>
-          Collect {formatCurrency(fee)} &amp; Renew
+        <FormError message={error} />
+
+        <button type="submit" disabled={saving} className={styles.modalSubmitBtn}>
+          {saving ? "Saving..." : <>Collect {formatCurrency(fee)} &amp; Renew</>}
         </button>
       </form>
     </Modal>
@@ -619,7 +626,7 @@ const MemberDetails = ({
           Edit Member
         </button>
 
-        <button className={styles.renewMemberBtn} onClick={onRenew}>
+        <button className={styles.renewMemberBtn} onClick={onRenew} disabled={!member.currentCycleId}>
           Renew Membership
         </button>
 
@@ -656,171 +663,267 @@ const MemberDetails = ({
 /* ------------------------------------------------------------------ */
 
 const Members = () => {
-  const [members, setMembers] = useState(INITIAL_MEMBERS);
+  const [members, setMembers] = useState([]);
+  const [organizationId, setOrganizationId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
+  const [actionError, setActionError] = useState("");
 
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
-
-  // Store the id, not a copy, so the details view can never go stale.
   const [selectedId, setSelectedId] = useState(null);
-  // null | "add" | "edit" | "renew"
   const [activeModal, setActiveModal] = useState(null);
 
-  // Close the filter menu when clicking elsewhere.
+  const fetchMembers = useCallback(async (orgId) => {
+    // Separate queries avoid ambiguous joins from our composite foreign keys.
+    const [memberResult, membershipResult, paymentResult] = await Promise.all([
+      supabase.from("members")
+        .select("id, name, mobile_number, email, created_at")
+        .eq("organization_id", orgId)
+        .order("created_at", { ascending: false }),
+      supabase.from("memberships")
+        .select("id, member_id, plan_name, duration_months, fee, start_date, expiry_date, renewal_start_type, created_at")
+        .eq("organization_id", orgId),
+      supabase.from("payments")
+        .select("id, member_id, membership_id, amount, payment_date, payment_mode, payment_type")
+        .eq("organization_id", orgId),
+    ]);
+
+    const error = memberResult.error || membershipResult.error || paymentResult.error;
+    if (error) throw error;
+
+    setMembers(buildMemberView(
+      memberResult.data || [],
+      membershipResult.data || [],
+      paymentResult.data || [],
+    ));
+    setFetchError("");
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+        if (!userData.user) throw new Error("Please log in again.");
+
+        const { data: org, error: orgError } = await supabase
+          .from("organizations")
+          .select("id")
+          .eq("owner_id", userData.user.id)
+          .single();
+        if (orgError) throw orgError;
+        if (cancelled) return;
+        setOrganizationId(org.id);
+        await fetchMembers(org.id);
+      } catch (err) {
+        if (!cancelled) setFetchError(err.message || "Unable to load members.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [fetchMembers]);
+
   useEffect(() => {
     if (!isFilterOpen) return undefined;
-
     const handleOutsideClick = (event) => {
       if (!filterRef.current?.contains(event.target)) setIsFilterOpen(false);
     };
-
     document.addEventListener("mousedown", handleOutsideClick);
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [isFilterOpen]);
 
   const membersWithStatus = useMemo(
-    () =>
-      members.map((member) => ({
-        ...member,
-        status: getMemberStatus(member.expiryDate),
-      })),
+    () => members.map((member) => ({
+      ...member,
+      status: getMemberStatus(member.expiryDate),
+    })),
     [members],
   );
 
   const filteredMembers = useMemo(() => {
     const query = searchValue.trim().toLowerCase();
-
     return membersWithStatus.filter((member) => {
-      const matchesSearch =
-        !query ||
+      const matchesSearch = !query ||
         member.name.toLowerCase().includes(query) ||
         member.mobileNumber.includes(query);
-
-      const matchesStatus =
-        selectedStatus === "All" || member.status === selectedStatus;
-
+      const matchesStatus = selectedStatus === "All" || member.status === selectedStatus;
       return matchesSearch && matchesStatus;
     });
   }, [membersWithStatus, searchValue, selectedStatus]);
 
-  const selectedMember = membersWithStatus.find((m) => m.id === selectedId);
-
-  const updateMember = (id, updater) =>
-    setMembers((current) =>
-      current.map((member) => (member.id === id ? updater(member) : member)),
-    );
-
+  const selectedMember = membersWithStatus.find((member) => member.id === selectedId);
   const isDuplicateMobile = (mobileNumber, ignoreId) =>
-    members.some(
-      (member) =>
-        member.id !== ignoreId && member.mobileNumber === mobileNumber,
-    );
-
+    members.some((member) => member.id !== ignoreId && member.mobileNumber === mobileNumber);
   const closeModal = () => setActiveModal(null);
+  const showDatabaseError = (error) =>
+    error?.code === "23505"
+      ? "This mobile number is already registered for your business."
+      : error?.message || "Database operation failed.";
 
-  /* ---------- Handlers ---------- */
-
-  const handleAddMember = (values) => {
+  // A new member creates three linked records. On failure, attempt cleanup.
+  const handleAddMember = async (values) => {
+    if (!organizationId) return "Your organization is still loading. Please retry.";
     if (isDuplicateMobile(values.mobileNumber)) {
       return "A member with this mobile number already exists.";
     }
 
-    const cycleId = createId();
-
-    setMembers((current) => [
-      ...current,
-      {
-        id: createId(),
+    const { data: member, error: memberError } = await supabase
+      .from("members")
+      .insert({
+        organization_id: organizationId,
         name: values.name,
-        mobileNumber: values.mobileNumber,
-        email: values.email,
-        joiningDate: values.joiningDate,
-        membership: values.membership,
-        membershipMonths: values.membershipMonths,
-        membershipFee: values.membershipFee,
-        expiryDate: addMonths(values.joiningDate, values.membershipMonths),
-        currentCycleId: cycleId,
-        // Full fee is collected when the member joins.
-        payments: [
-          {
-            id: createId(),
-            amount: values.membershipFee,
-            date: values.joiningDate,
-            mode: values.paymentMode,
-            type: "Joining",
-            membershipMonths: values.membershipMonths,
-            cycleId,
-          },
-        ],
-      },
-    ]);
+        mobile_number: values.mobileNumber,
+        email: values.email || null,
+      })
+      .select("id")
+      .single();
+    if (memberError) return showDatabaseError(memberError);
+
+    const { data: membership, error: membershipError } = await supabase
+      .from("memberships")
+      .insert({
+        organization_id: organizationId,
+        member_id: member.id,
+        plan_id: null,
+        plan_name: values.membership,
+        duration_months: values.membershipMonths,
+        fee: values.membershipFee,
+        start_date: values.joiningDate,
+        expiry_date: addMonths(values.joiningDate, values.membershipMonths),
+        renewal_start_type: "joining",
+      })
+      .select("id")
+      .single();
+
+    if (membershipError) {
+      const { error: rollbackError } = await supabase.from("members")
+        .delete().eq("id", member.id).eq("organization_id", organizationId);
+      return rollbackError
+        ? `Membership could not be saved: ${membershipError.message}. Cleanup also failed; check Supabase before retrying.`
+        : showDatabaseError(membershipError);
+    }
+
+    const { error: paymentError } = await supabase.from("payments").insert({
+      organization_id: organizationId,
+      member_id: member.id,
+      membership_id: membership.id,
+      amount: values.membershipFee,
+      payment_date: values.joiningDate,
+      payment_mode: values.paymentMode,
+      payment_type: "Joining",
+    });
+    if (paymentError) {
+      const { error: rollbackError } = await supabase.from("members")
+        .delete().eq("id", member.id).eq("organization_id", organizationId);
+      return rollbackError
+        ? `Payment could not be saved: ${paymentError.message}. Cleanup also failed; check Supabase before retrying.`
+        : showDatabaseError(paymentError);
+    }
 
     closeModal();
+    try { await fetchMembers(organizationId); }
+    catch (err) { setFetchError(err.message); }
     return null;
   };
 
-  const handleEditMember = (values) => {
+  const handleEditMember = async (values) => {
+    if (!organizationId || !selectedMember) return "No member selected.";
     if (isDuplicateMobile(values.mobileNumber, selectedId)) {
       return "Another member already uses this mobile number.";
     }
 
-    updateMember(selectedId, (member) => ({
-      ...member,
+    const { error } = await supabase.from("members").update({
       name: values.name,
-      mobileNumber: values.mobileNumber,
-      email: values.email,
-      membership: values.membership,
-    }));
+      mobile_number: values.mobileNumber,
+      email: values.email || null,
+    }).eq("id", selectedId).eq("organization_id", organizationId);
+    if (error) return showDatabaseError(error);
+
+    // Preserve the original UI's ability to change the current plan label.
+    if (selectedMember.currentCycleId && values.membership !== selectedMember.membership) {
+      const { error: planError } = await supabase.from("memberships")
+        .update({ plan_name: values.membership, plan_id: null })
+        .eq("id", selectedMember.currentCycleId)
+        .eq("organization_id", organizationId);
+      if (planError) {
+        try { await fetchMembers(organizationId); } catch { /* Show edit error below. */ }
+        return `Contact details were saved, but the plan could not be changed: ${planError.message}`;
+      }
+    }
 
     closeModal();
     setSelectedId(null);
+    try { await fetchMembers(organizationId); }
+    catch (err) { setFetchError(err.message); }
     return null;
   };
 
-  const handleDeleteMember = () => {
-    if (
-      !window.confirm(`Delete ${selectedMember.name}? This can't be undone.`)
-    ) {
+  const handleDeleteMember = async () => {
+    if (!selectedMember || !organizationId) return;
+    if (!window.confirm(`Delete ${selectedMember.name}? This can't be undone.`)) return;
+    setActionError("");
+
+    const { error } = await supabase.from("members")
+      .delete().eq("id", selectedId).eq("organization_id", organizationId);
+    if (error) {
+      setActionError(showDatabaseError(error));
       return;
     }
 
-    setMembers((current) => current.filter((m) => m.id !== selectedId));
     setSelectedId(null);
+    setActiveModal(null);
+    try { await fetchMembers(organizationId); }
+    catch (err) { setFetchError(err.message); }
   };
 
-  // The only handler that extends a membership.
-  const handleRenew = ({ months, fee, date, mode, startDate }) => {
-    const cycleId = createId();
+  const handleRenew = async ({ months, fee, date, mode, startDate, renewalStartType }) => {
+    if (!organizationId || !selectedMember?.currentCycleId) return "No active membership period found.";
+    const { data: membership, error: membershipError } = await supabase
+      .from("memberships")
+      .insert({
+        organization_id: organizationId,
+        member_id: selectedMember.id,
+        plan_id: null,
+        plan_name: selectedMember.membership,
+        duration_months: months,
+        fee,
+        start_date: startDate,
+        expiry_date: addMonths(startDate, months),
+        previous_expiry_date: selectedMember.expiryDate,
+        renewal_start_type: renewalStartType,
+      })
+      .select("id")
+      .single();
+    if (membershipError) return showDatabaseError(membershipError);
 
-    updateMember(selectedId, (member) => {
-      // Renewal always collects the full fee.
-      const payments = [
-        ...member.payments,
-        {
-          id: createId(),
-          amount: fee,
-          date,
-          mode,
-          type: "Renewal",
-          membershipMonths: months,
-          cycleId,
-        },
-      ];
-
-      return {
-        ...member,
-        membershipMonths: months,
-        membershipFee: fee,
-        expiryDate: addMonths(startDate, months),
-        currentCycleId: cycleId,
-        payments,
-      };
+    const { error: paymentError } = await supabase.from("payments").insert({
+      organization_id: organizationId,
+      member_id: selectedMember.id,
+      membership_id: membership.id,
+      amount: fee,
+      payment_date: date,
+      payment_mode: mode,
+      payment_type: "Renewal",
     });
+    if (paymentError) {
+      const { error: rollbackError } = await supabase.from("memberships")
+        .delete().eq("id", membership.id).eq("organization_id", organizationId);
+      return rollbackError
+        ? `Payment failed: ${paymentError.message}. Cleanup also failed; check Supabase before retrying.`
+        : showDatabaseError(paymentError);
+    }
 
     closeModal();
     setSelectedId(null);
+    try { await fetchMembers(organizationId); }
+    catch (err) { setFetchError(err.message); }
+    return null;
   };
 
   const handleRowKeyDown = (event, id) => {
@@ -841,6 +944,7 @@ const Members = () => {
         </div>
 
         <button
+          disabled={loading || !organizationId}
           className={styles.addMemberBtn}
           onClick={() => setActiveModal("add")}
         >
@@ -891,6 +995,16 @@ const Members = () => {
         </div>
       </div>
 
+      {loading && <p role="status">Loading members...</p>}
+      {fetchError && <p role="alert" className={styles.formError}>
+        {fetchError} <button type="button" onClick={() => {
+          if (!organizationId) { window.location.reload(); return; }
+          setFetchError("");
+          fetchMembers(organizationId).catch((err) => setFetchError(err.message));
+        }}>Retry</button>
+      </p>}
+      {actionError && <p role="alert" className={styles.formError}>{actionError}</p>}
+
       {/* DESKTOP TABLE */}
       <div className={styles.membersTableWrapper}>
         <table className={styles.membersTable}>
@@ -935,9 +1049,7 @@ const Members = () => {
             onClick={() => setSelectedId(member.id)}
             onKeyDown={(event) => handleRowKeyDown(event, member.id)}
           >
-            <div className={styles.memberAvatar}>
-              {getInitials(member.name)}
-            </div>
+            <div className={styles.memberAvatar}>{getInitials(member.name)}</div>
 
             <div className={styles.memberMobileInfo}>
               <strong>{member.name}</strong>
@@ -954,7 +1066,7 @@ const Members = () => {
         ))}
       </div>
 
-      {filteredMembers.length === 0 && (
+      {!loading && !fetchError && filteredMembers.length === 0 && (
         <p className={styles.emptyState}>
           {members.length === 0
             ? "No members yet. Add your first member to get started."
@@ -999,7 +1111,8 @@ const Members = () => {
             name: selectedMember.name,
             mobileNumber: selectedMember.mobileNumber,
             email: selectedMember.email || "",
-            membership: selectedMember.membership,
+            membership: MEMBERSHIP_TYPES.includes(selectedMember.membership)
+              ? selectedMember.membership : MEMBERSHIP_TYPES[0],
           }}
           onSubmit={handleEditMember}
           onClose={closeModal}
