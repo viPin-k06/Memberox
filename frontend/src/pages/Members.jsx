@@ -7,18 +7,10 @@ import { supabase } from "../lib/supabase";
 /* Constants                                                           */
 /* ------------------------------------------------------------------ */
 
-const MEMBERSHIP_TYPES = ["Basic", "Premium"];
 const PAYMENT_MODES = ["Cash", "UPI", "Card", "Bank Transfer"];
 const STATUS_FILTERS = ["All", "Active", "Expiring", "Expired"];
 const DURATION_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
 const EXPIRING_SOON_DAYS = 7;
-
-// Edit these to match your gym's prices.
-// Fee = package price for that duration if one exists, otherwise monthly rate x months.
-const MONTHLY_RATE = { Basic: 999, Premium: 899 };
-const PACKAGE_PRICES = {
-  Premium: { 3: 2499, 6: 4999 },
-};
 
 const STATUS_CLASS = {
   Active: styles.statusActive,
@@ -49,8 +41,13 @@ const formatCurrency = (amount) => `₹${amount.toLocaleString("en-IN")}`;
 const formatDuration = (months) =>
   months === 12 ? "1 Year" : `${months} ${months === 1 ? "Month" : "Months"}`;
 
-const getPlanFee = (membership, months) =>
-  PACKAGE_PRICES[membership]?.[months] ?? MONTHLY_RATE[membership] * months;
+// Prices come from the business's saved Supabase membership plans.
+const getPlanFee = (plans, planName, months, planId = null) => {
+  const plan = plans.find((item) => (planId && item.id === planId) || item.name === planName);
+  if (!plan) return 0;
+  const custom = plan.duration_prices?.[String(months)];
+  return custom != null ? Number(custom) : Number(plan.monthly_price) * months;
+};
 
 const getInitials = (name) =>
   name
@@ -136,6 +133,7 @@ const buildMemberView = (memberRows, membershipRows, paymentRows) => {
       email: row.email || "",
       joiningDate: joining?.start_date || row.created_at.slice(0, 10),
       membership: current?.plan_name || "—",
+      planId: current?.plan_id || null,
       membershipMonths: current?.duration_months || 1,
       membershipFee: Number(current?.fee || 0),
       expiryDate: current?.expiry_date || "",
@@ -244,7 +242,7 @@ const Modal = ({
 /* ------------------------------------------------------------------ */
 
 // `onSubmit` returns an error string to display, or null on success.
-const MemberForm = ({ mode, initialValues, onSubmit, onClose }) => {
+const MemberForm = ({ mode, initialValues, onSubmit, onClose, plans }) => {
   const isEdit = mode === "edit";
   const [form, bind, setForm] = useForm(initialValues);
   const [error, setError] = useState("");
@@ -263,7 +261,7 @@ const MemberForm = ({ mode, initialValues, onSubmit, onClose }) => {
         : {
             ...next,
             membershipFee: String(
-              getPlanFee(next.membership, Number(next.membershipMonths)),
+              getPlanFee(plans, next.membership, Number(next.membershipMonths)),
             ),
           };
     });
@@ -354,9 +352,14 @@ const MemberForm = ({ mode, initialValues, onSubmit, onClose }) => {
             value={form.membership}
             onChange={handlePlanChange("membership")}
           >
-            {MEMBERSHIP_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
+            {isEdit && !plans.some((plan) => plan.name === form.membership) && (
+              <option value={form.membership}>
+                {form.membership} (previous plan)
+              </option>
+            )}
+            {plans.map((plan) => (
+              <option key={plan.id} value={plan.name}>
+                {plan.name}
               </option>
             ))}
           </select>
@@ -410,10 +413,11 @@ const MemberForm = ({ mode, initialValues, onSubmit, onClose }) => {
 };
 
 // Renewal always collects the full fee, so the payment is recorded automatically.
-const RenewForm = ({ member, onSubmit, onClose }) => {
+const RenewForm = ({ member, onSubmit, onClose, plans }) => {
+  const hasActivePlan = plans.some((plan) => plan.id === member.planId || plan.name === member.membership);
   const [form, bind, setForm] = useForm({
     months: String(member.membershipMonths),
-    fee: String(getPlanFee(member.membership, member.membershipMonths)),
+    fee: String(getPlanFee(plans, member.membership, member.membershipMonths, member.planId)),
     date: toISODate(new Date()),
     mode: "Cash",
   });
@@ -428,7 +432,7 @@ const RenewForm = ({ member, onSubmit, onClose }) => {
     setForm((current) => ({
       ...current,
       months,
-      fee: String(getPlanFee(member.membership, Number(months))),
+      fee: String(getPlanFee(plans, member.membership, Number(months), member.planId)),
     }));
   };
 
@@ -451,6 +455,10 @@ const RenewForm = ({ member, onSubmit, onClose }) => {
     event.preventDefault();
     if (saving) return;
     setError("");
+    if (!hasActivePlan) {
+      setError("This plan is no longer active. Select an active plan for the member before renewing.");
+      return;
+    }
     if (fee <= 0 || !form.date || !startDate || !newExpiry) {
       setError("Enter a valid renewal date and fee.");
       return;
@@ -562,9 +570,12 @@ const RenewForm = ({ member, onSubmit, onClose }) => {
           </p>
         )}
 
+        {!hasActivePlan && (
+          <FormError message="This plan is no longer active. Edit the member to select an active plan before renewing." />
+        )}
         <FormError message={error} />
 
-        <button type="submit" disabled={saving} className={styles.modalSubmitBtn}>
+        <button type="submit" disabled={saving || !hasActivePlan} className={styles.modalSubmitBtn}>
           {saving ? "Saving..." : <>Collect {formatCurrency(fee)} &amp; Renew</>}
         </button>
       </form>
@@ -664,6 +675,7 @@ const MemberDetails = ({
 
 const Members = () => {
   const [members, setMembers] = useState([]);
+  const [plans, setPlans] = useState([]);
   const [organizationId, setOrganizationId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
@@ -684,7 +696,7 @@ const Members = () => {
         .eq("organization_id", orgId)
         .order("created_at", { ascending: false }),
       supabase.from("memberships")
-        .select("id, member_id, plan_name, duration_months, fee, start_date, expiry_date, renewal_start_type, created_at")
+        .select("id, member_id, plan_id, plan_name, duration_months, fee, start_date, expiry_date, renewal_start_type, created_at")
         .eq("organization_id", orgId),
       supabase.from("payments")
         .select("id, member_id, membership_id, amount, payment_date, payment_mode, payment_type")
@@ -718,6 +730,15 @@ const Members = () => {
         if (orgError) throw orgError;
         if (cancelled) return;
         setOrganizationId(org.id);
+        const { data: planData, error: planError } = await supabase
+          .from("membership_plans")
+          .select("id, name, monthly_price, duration_prices, is_active")
+          .eq("organization_id", org.id)
+          .eq("is_active", true)
+          .order("name");
+        if (planError) throw planError;
+        if (cancelled) return;
+        setPlans(planData || []);
         await fetchMembers(org.id);
       } catch (err) {
         if (!cancelled) setFetchError(err.message || "Unable to load members.");
@@ -769,6 +790,8 @@ const Members = () => {
   // A new member creates three linked records. On failure, attempt cleanup.
   const handleAddMember = async (values) => {
     if (!organizationId) return "Your organization is still loading. Please retry.";
+    const selectedPlan = plans.find((plan) => plan.name === values.membership);
+    if (!selectedPlan) return "Select an active membership plan before adding a member.";
     if (isDuplicateMobile(values.mobileNumber)) {
       return "A member with this mobile number already exists.";
     }
@@ -790,7 +813,7 @@ const Members = () => {
       .insert({
         organization_id: organizationId,
         member_id: member.id,
-        plan_id: null,
+        plan_id: selectedPlan.id,
         plan_name: values.membership,
         duration_months: values.membershipMonths,
         fee: values.membershipFee,
@@ -848,7 +871,10 @@ const Members = () => {
     // Preserve the original UI's ability to change the current plan label.
     if (selectedMember.currentCycleId && values.membership !== selectedMember.membership) {
       const { error: planError } = await supabase.from("memberships")
-        .update({ plan_name: values.membership, plan_id: null })
+        .update({
+          plan_name: values.membership,
+          plan_id: plans.find((plan) => plan.name === values.membership)?.id ?? null,
+        })
         .eq("id", selectedMember.currentCycleId)
         .eq("organization_id", organizationId);
       if (planError) {
@@ -884,13 +910,15 @@ const Members = () => {
 
   const handleRenew = async ({ months, fee, date, mode, startDate, renewalStartType }) => {
     if (!organizationId || !selectedMember?.currentCycleId) return "No active membership period found.";
+    const selectedPlan = plans.find((plan) => plan.id === selectedMember.planId || plan.name === selectedMember.membership);
+    if (!selectedPlan) return "This membership plan is inactive. Edit the member to choose an active plan first.";
     const { data: membership, error: membershipError } = await supabase
       .from("memberships")
       .insert({
         organization_id: organizationId,
         member_id: selectedMember.id,
-        plan_id: null,
-        plan_name: selectedMember.membership,
+        plan_id: selectedPlan.id,
+        plan_name: selectedPlan.name,
         duration_months: months,
         fee,
         start_date: startDate,
@@ -944,7 +972,7 @@ const Members = () => {
         </div>
 
         <button
-          disabled={loading || !organizationId}
+          disabled={loading || !organizationId || plans.length === 0}
           className={styles.addMemberBtn}
           onClick={() => setActiveModal("add")}
         >
@@ -996,6 +1024,9 @@ const Members = () => {
       </div>
 
       {loading && <p role="status">Loading members...</p>}
+      {!loading && !fetchError && plans.length === 0 && (
+        <p role="status">Create an active membership plan on the Memberships page before adding members.</p>
+      )}
       {fetchError && <p role="alert" className={styles.formError}>
         {fetchError} <button type="button" onClick={() => {
           if (!organizationId) { window.location.reload(); return; }
@@ -1083,13 +1114,14 @@ const Members = () => {
             mobileNumber: "",
             email: "",
             joiningDate: toISODate(new Date()),
-            membership: MEMBERSHIP_TYPES[0],
+            membership: plans[0]?.name || "",
             membershipMonths: "1",
-            membershipFee: String(getPlanFee(MEMBERSHIP_TYPES[0], 1)),
+            membershipFee: String(plans.length ? getPlanFee(plans, plans[0].name, 1) : 0),
             paymentMode: PAYMENT_MODES[0],
           }}
           onSubmit={handleAddMember}
           onClose={closeModal}
+          plans={plans}
         />
       )}
 
@@ -1111,11 +1143,11 @@ const Members = () => {
             name: selectedMember.name,
             mobileNumber: selectedMember.mobileNumber,
             email: selectedMember.email || "",
-            membership: MEMBERSHIP_TYPES.includes(selectedMember.membership)
-              ? selectedMember.membership : MEMBERSHIP_TYPES[0],
+            membership: selectedMember.membership,
           }}
           onSubmit={handleEditMember}
           onClose={closeModal}
+          plans={plans}
         />
       )}
 
@@ -1124,6 +1156,7 @@ const Members = () => {
           member={selectedMember}
           onSubmit={handleRenew}
           onClose={closeModal}
+          plans={plans}
         />
       )}
     </main>
