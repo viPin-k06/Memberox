@@ -1,25 +1,139 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Settings.module.css";
+import { supabase } from "../lib/supabase";
 
 const Settings = () => {
-  const [gymName, setGymName] = useState("Memberox Fitness");
-  const [ownerName, setOwnerName] = useState("Gym Owner");
-  const [mobile, setMobile] = useState("9876543210");
-  const [email, setEmail] = useState("owner@example.com");
-
-  const [whatsapp, setWhatsapp] = useState(true);
+  const [organizationId, setOrganizationId] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [gymName, setGymName] = useState("");
+  const [ownerName, setOwnerName] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState(false);
   const [daysBefore, setDaysBefore] = useState("3");
-
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [savingBusiness, setSavingBusiness] = useState(false);
+  const [savingNotifications, setSavingNotifications] = useState(false);
 
-  const saveBusiness = (event) => {
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSettings = async () => {
+      try {
+        const { data: authData, error: authError } =
+          await supabase.auth.getUser();
+        if (authError) throw authError;
+        const user = authData.user;
+        if (!user) throw new Error("Please sign in again.");
+
+        const [orgResult, profileResult] = await Promise.all([
+          supabase
+            .from("organizations")
+            .select(
+              "id, name, phone, whatsapp_reminders_enabled, reminder_days_before",
+            )
+            .eq("owner_id", user.id)
+            .single(),
+          supabase
+            .from("profiles")
+            .select("full_name, phone")
+            .eq("id", user.id)
+            .single(),
+        ]);
+
+        if (orgResult.error) throw orgResult.error;
+        if (profileResult.error) throw profileResult.error;
+        if (cancelled) return;
+
+        setUserId(user.id);
+        setOrganizationId(orgResult.data.id);
+        setGymName(orgResult.data.name ?? "");
+        setOwnerName(profileResult.data.full_name ?? "");
+        setMobile(orgResult.data.phone ?? profileResult.data.phone ?? "");
+        setEmail(user.email ?? "");
+        setWhatsapp(orgResult.data.whatsapp_reminders_enabled ?? false);
+        setDaysBefore(String(orgResult.data.reminder_days_before ?? 3));
+      } catch (err) {
+        if (!cancelled) setError(err.message || "Unable to load settings.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadSettings();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const saveBusiness = async (event) => {
     event.preventDefault();
-    setMessage("Business details saved.");
+    if (!organizationId || !userId || savingBusiness) return;
+    setMessage("");
+    setError("");
+
+    const businessName = gymName.trim();
+    const fullName = ownerName.trim();
+
+    if (!businessName || !fullName) {
+      setError("Business name and owner name are required.");
+      return;
+    }
+
+    setSavingBusiness(true);
+    try {
+      const { error: orgError } = await supabase
+        .from("organizations")
+        .update({ name: businessName })
+        .eq("id", organizationId)
+        .eq("owner_id", userId);
+      if (orgError) throw orgError;
+
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ full_name: fullName })
+        .eq("id", userId);
+      if (profileError) {
+        throw new Error(
+          `Business details were saved, but owner details could not be updated: ${profileError.message}`,
+        );
+      }
+
+      setGymName(businessName);
+      setOwnerName(fullName);
+      setMessage("Business details saved successfully.");
+    } catch (err) {
+      setError(err.message || "Unable to save business details.");
+    } finally {
+      setSavingBusiness(false);
+    }
   };
 
-  const saveNotifications = (event) => {
+  const saveNotifications = async (event) => {
     event.preventDefault();
-    setMessage("Reminder settings saved.");
+    if (!organizationId || savingNotifications) return;
+    setMessage("");
+    setError("");
+    setSavingNotifications(true);
+
+    try {
+      const { error: updateError } = await supabase
+        .from("organizations")
+        .update({
+          whatsapp_reminders_enabled: whatsapp,
+          reminder_days_before: Number(daysBefore),
+        })
+        .eq("id", organizationId)
+        .eq("owner_id", userId);
+      if (updateError) throw updateError;
+      setMessage("WhatsApp reminder preferences saved successfully.");
+    } catch (err) {
+      setError(err.message || "Unable to save reminder settings.");
+    } finally {
+      setSavingNotifications(false);
+    }
   };
 
   return (
@@ -29,98 +143,114 @@ const Settings = () => {
         <p>Manage your gym and reminder preferences.</p>
       </div>
 
+      {loading && <p role="status">Loading settings...</p>}
+      {error && (
+        <div role="alert" className={styles.success}>
+          {error}
+        </div>
+      )}
       {message && (
-        <div className={styles.success} onClick={() => setMessage("")}>
+        <div
+          className={styles.success}
+          role="status"
+          onClick={() => setMessage("")}
+        >
           {message}
         </div>
       )}
 
-      <section className={styles.card}>
-        <div className={styles.sectionHeader}>
-          <h2>Business Details</h2>
-          <p>Information used across your Memberox account.</p>
-        </div>
-
-        <form className={styles.form} onSubmit={saveBusiness}>
-          <label>
-            Gym / Business Name
-            <input
-              value={gymName}
-              onChange={(event) => setGymName(event.target.value)}
-              required
-            />
-          </label>
-
-          <label>
-            Owner Name
-            <input
-              value={ownerName}
-              onChange={(event) => setOwnerName(event.target.value)}
-              required
-            />
-          </label>
-
-          <label>
-            Mobile Number
-            <input
-              type="tel"
-              value={mobile}
-              onChange={(event) => setMobile(event.target.value)}
-              required
-            />
-          </label>
-
-          <label>
-            Email
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </label>
-
-          <button type="submit">Save Business Details</button>
-        </form>
-      </section>
-
-      <section className={styles.card}>
-        <div className={styles.sectionHeader}>
-          <h2>Reminder Preferences</h2>
-          <p>Choose when expiry reminders should be sent on WhatsApp.</p>
-        </div>
-
-        <form className={styles.preferenceForm} onSubmit={saveNotifications}>
-          <div className={styles.toggleRow}>
-            <div>
-              <strong>WhatsApp reminders</strong>
-              <span>Send expiry reminders through WhatsApp.</span>
+      {!loading && organizationId && (
+        <>
+          <section className={styles.card}>
+            <div className={styles.sectionHeader}>
+              <h2>Business Details</h2>
+              <p>Information used across your Memberox account.</p>
             </div>
 
-            <input
-              type="checkbox"
-              aria-label="WhatsApp reminders"
-              checked={whatsapp}
-              onChange={(event) => setWhatsapp(event.target.checked)}
-            />
-          </div>
+            <form className={styles.form} onSubmit={saveBusiness}>
+              <label>
+                Gym / Business Name
+                <input
+                  value={gymName}
+                  onChange={(event) => setGymName(event.target.value)}
+                  required
+                />
+              </label>
+              <label>
+                Owner Name
+                <input
+                  value={ownerName}
+                  onChange={(event) => setOwnerName(event.target.value)}
+                  required
+                />
+              </label>
+              <label>
+                Mobile Number
+                <input
+                  type="tel"
+                  value={mobile}
+                  readOnly
+                  title="Your registered mobile number cannot be changed here."
+                />
+              </label>
+              <label>
+                Email
+                <input
+                  type="email"
+                  value={email}
+                  readOnly
+                  title="Your sign-in email is managed through authentication."
+                />
+              </label>
+              <button type="submit" disabled={savingBusiness}>
+                {savingBusiness ? "Saving..." : "Save Business Details"}
+              </button>
+            </form>
+          </section>
 
-          <label className={styles.selectLabel}>
-            Send reminder before expiry
-            <select
-              value={daysBefore}
-              onChange={(event) => setDaysBefore(event.target.value)}
-              disabled={!whatsapp}
+          <section className={styles.card}>
+            <div className={styles.sectionHeader}>
+              <h2>Reminder Preferences</h2>
+              <p>Choose when expiry reminders should be sent on WhatsApp.</p>
+            </div>
+
+            <form
+              className={styles.preferenceForm}
+              onSubmit={saveNotifications}
             >
-              <option value="1">1 day before</option>
-              <option value="3">3 days before</option>
-              <option value="5">5 days before</option>
-              <option value="7">7 days before</option>
-            </select>
-          </label>
+              <div className={styles.toggleRow}>
+                <div>
+                  <strong>WhatsApp reminders</strong>
+                  <span>Send expiry reminders through WhatsApp.</span>
+                </div>
+                <input
+                  type="checkbox"
+                  aria-label="WhatsApp reminders"
+                  checked={whatsapp}
+                  onChange={(event) => setWhatsapp(event.target.checked)}
+                />
+              </div>
 
-          <button type="submit">Save Reminder Settings</button>
-        </form>
-      </section>
+              <label className={styles.selectLabel}>
+                Send reminder before expiry
+                <select
+                  value={daysBefore}
+                  onChange={(event) => setDaysBefore(event.target.value)}
+                  disabled={!whatsapp}
+                >
+                  <option value="1">1 day before</option>
+                  <option value="3">3 days before</option>
+                  <option value="5">5 days before</option>
+                  <option value="7">7 days before</option>
+                </select>
+              </label>
+              <button type="submit" disabled={savingNotifications}>
+                {savingNotifications ? "Saving..." : "Save Reminder Settings"}
+              </button>
+            </form>
+          </section>
+        </>
+      )}
     </main>
   );
 };
