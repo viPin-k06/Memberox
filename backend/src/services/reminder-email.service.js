@@ -7,8 +7,9 @@ export async function sendReminderEmail({
   memberName,
   gymName,
   expiryDate,
+  idempotencyKey,
 }) {
-  if (!to) {
+  if (!to?.trim()) {
     throw new Error("Member email address is missing");
   }
 
@@ -20,7 +21,8 @@ export async function sendReminderEmail({
     <p>Hi ${escapeHtml(memberName)},</p>
 
     <p>
-      Your membership at <strong>${escapeHtml(gymName)}</strong>
+      Your membership at
+      <strong>${escapeHtml(gymName)}</strong>
       is scheduled to expire on
       <strong>${escapeHtml(expiryDate)}</strong>.
     </p>
@@ -29,7 +31,10 @@ export async function sendReminderEmail({
       Please contact your gym to renew your membership.
     </p>
 
-    <p>Thank you,<br>${escapeHtml(gymName)}</p>
+    <p>
+      Thank you,<br>
+      ${escapeHtml(gymName)}
+    </p>
   `;
 
   // Development mode: no real email is sent.
@@ -38,6 +43,7 @@ export async function sendReminderEmail({
       to,
       subject,
       expiryDate,
+      idempotencyKey: idempotencyKey ?? null,
     });
 
     return {
@@ -54,17 +60,35 @@ export async function sendReminderEmail({
     throw new Error("Resend email configuration is missing");
   }
 
+  // Never send live reminders without a stable key.
+  if (
+    typeof idempotencyKey !== "string" ||
+    idempotencyKey.length < 1 ||
+    idempotencyKey.length > 256
+  ) {
+    throw new Error("A valid idempotency key is required for live emails");
+  }
+
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  const { data, error } = await resend.emails.send({
-    from: process.env.EMAIL_FROM,
-    to: [to],
-    subject,
-    html: message,
-  });
+  const { data, error } = await resend.emails.send(
+    {
+      from: process.env.EMAIL_FROM,
+      to: [to.trim()],
+      subject,
+      html: message,
+    },
+    {
+      idempotencyKey,
+    },
+  );
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(`Resend error: ${error.message}`);
+  }
+
+  if (!data?.id) {
+    throw new Error("Resend did not return an email ID");
   }
 
   return {
