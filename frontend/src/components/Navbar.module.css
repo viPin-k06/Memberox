@@ -1,90 +1,194 @@
 .navbar {
+  position: relative;
+  z-index: 30;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #eae7f1;
+}
+
+.navInner {
+  max-width: 1240px;
+  min-height: 78px;
+  margin: 0 auto;
+  padding: 0 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
-  background-color: var(--nav-background);
+  gap: 2rem;
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+  color: var(--text, #1f1f1f);
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+
+.logoMark {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #9659fa 0%, var(--primary, #7c3aed) 75%);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.08em;
+  box-shadow: 0 5px 14px rgba(124, 58, 237, 0.18);
+}
+
+.navLinks,
+.sectionLinks,
+.accountLinks {
+  display: flex;
+  align-items: center;
 }
 
 .navLinks {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  flex: 1;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.sectionLinks {
+  gap: 2rem;
+  margin: 0 auto;
+}
+.accountLinks {
+  gap: 1.25rem;
 }
 
 .navLinks a {
-  color: var(--text);
+  color: #514b60;
   text-decoration: none;
-  transition: color 0.2s ease;
+  font-size: 0.94rem;
+  font-weight: 600;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .navLinks a:hover {
-  color: var(--primary);
+  color: var(--primary, #7c3aed);
 }
 
-.signupButton {
-  background-color: var(--primary);
-  color: var(--white) !important;
-  padding: 0.7rem 1.1rem;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s ease;
+.navLinks .signupButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.15rem;
+  border-radius: 0.75rem;
+  color: #fff;
+  background: var(--primary, #7c3aed);
+  white-space: nowrap;
+  box-shadow: 0 5px 15px rgba(124, 58, 237, 0.17);
 }
 
-.signupButton:hover {
-  background-color: var(--primary-hover);
+.navLinks .signupButton:hover {
+  color: #fff;
+  background: var(--primary-hover, #6d28d9);
+  transform: translateY(-1px);
 }
 
 .menuToggle {
   display: none;
-  background: none;
-  border: none;
-  color: var(--text);
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid #e8e2f1;
+  border-radius: 0.7rem;
+  background: #f8f6fc;
+  color: var(--text, #1f1f1f);
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
-  .navbar {
+.logo:focus-visible,
+.navLinks a:focus-visible,
+.menuToggle:focus-visible {
+  outline: 3px solid #c4b5fd;
+  outline-offset: 3px;
+}
+
+@media (max-width: 850px) {
+  .navInner {
+    min-height: 70px;
+    padding: 0 1.25rem;
     flex-wrap: wrap;
+    gap: 0;
   }
 
   .menuToggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-flex;
   }
 
   .navLinks {
     display: none;
+    flex-basis: 100%;
     width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 1rem 0rem;
-    background-color: var(--nav-background);
-    border-top: 1px solid var(--border);
-  }
-
-  .signupButton:hover {
-    color: var(--text);
-  }
-
-  .navLinks a:hover {
-    background-color: var(--nav-hover-bg);
-  }
-
-  .navLinksOpen a {
-    width: 100%;
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--nav-border-hover);
+    padding: 1rem 0 1.25rem;
+    border-top: 1px solid #eeeaf4;
   }
 
   .navLinksOpen {
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .sectionLinks,
+  .accountLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    margin: 0;
+  }
+
+  .sectionLinks a,
+  .accountLinks .loginLink {
+    display: block;
+    padding: 0.8rem 0.9rem;
+    border-radius: 0.6rem;
+  }
+
+  .sectionLinks a:hover,
+  .accountLinks .loginLink:hover {
+    background: #f5f0ff;
+  }
+
+  .accountLinks {
+    padding-top: 0.7rem;
+    border-top: 1px solid #eeeaf4;
+  }
+
+  .navLinks .signupButton {
+    width: 100%;
+    padding: 0.85rem 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .navInner {
+    padding: 0 1rem;
+  }
+  .logo {
+    font-size: 1.28rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navLinks a {
+    transition: none;
   }
 }

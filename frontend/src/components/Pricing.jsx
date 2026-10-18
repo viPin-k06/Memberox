@@ -1,61 +1,134 @@
-import styles from "./Pricing.module.css";
 import { Link } from "react-router-dom";
+import { ArrowRight, Check, Sparkles, Zap } from "lucide-react";
+import styles from "./Pricing.module.css";
+
+const plans = [
+  {
+    name: "Pro",
+    price: "499",
+    description: "For independent gyms and studios.",
+    memberLimit: "Up to 100 members",
+    features: [
+      "Member and membership records",
+      "Membership expiry tracking",
+      "Configurable email reminders",
+      "Payment records and revenue overview",
+    ],
+    slug: "pro",
+    featured: true,
+  },
+  {
+    name: "Business",
+    price: "999",
+    description: "For businesses with a larger member base.",
+    memberLimit: "Unlimited members",
+    features: [
+      "Everything in Pro",
+      "Unlimited member records",
+      "Membership plans and renewals",
+      "Revenue analytics and payment history",
+      "Priority support",
+    ],
+    slug: "business",
+    featured: false,
+  },
+];
 
 const Pricing = () => {
   return (
     <section id="pricing" className={styles.pricing}>
-      <p className={styles.pricingLabel}>Pricing</p>
+      <div className={styles.container}>
+        <div className={styles.heading}>
+          <span className={styles.eyebrow}>
+            <span className={styles.eyebrowLine} />
+            PRICING
+          </span>
 
-      <h2 className={styles.pricingTitle}>
-        Simple plans for growing businesses.
-      </h2>
+          <h2>
+            Straightforward pricing.
+            <br />
+            <span>Room to grow.</span>
+          </h2>
 
-      <p className={styles.pricingDescription}>
-        Choose a plan that fits the way you manage your members.
-      </p>
-
-      <div className={styles.pricingCards}>
-        <div className={`${styles.pricingCard} ${styles.featured}`}>
-          <h3>Pro</h3>
-
-          <p className={styles.price}>
-            ₹499<span>/month</span>
+          <p>
+            Pick the member capacity that suits your business. No complicated
+            plan comparisons.
           </p>
-
-          <p>For businesses managing more members.</p>
-
-          <ul>
-            <li>Up to 500 members</li>
-            <li>Renewal reminders</li>
-            <li>Payment tracking</li>
-            <li>Member communication</li>
-          </ul>
-
-          <Link to="/signup?plan=pro" className={styles.planButton}>
-            Get Started
-          </Link>
         </div>
 
-        <div className={styles.pricingCard}>
-          <h3>Business</h3>
+        <div className={styles.cards}>
+          {plans.map((plan) => (
+            <article
+              key={plan.slug}
+              className={`${styles.card} ${
+                plan.featured ? styles.featured : ""
+              }`}
+            >
+              {plan.featured && (
+                <div className={styles.popularBadge}>
+                  <Sparkles size={14} />
+                  RECOMMENDED
+                </div>
+              )}
 
-          <p className={styles.price}>
-            ₹999<span>/month</span>
-          </p>
+              <div className={styles.cardHeader}>
+                <span
+                  className={`${styles.planIcon} ${
+                    plan.featured ? styles.proIcon : styles.businessIcon
+                  }`}
+                >
+                  {plan.featured ? <Zap size={22} /> : <Sparkles size={22} />}
+                </span>
 
-          <p>For businesses with larger memberships.</p>
+                <div>
+                  <h3>{plan.name}</h3>
+                  <p>{plan.description}</p>
+                </div>
+              </div>
 
-          <ul>
-            <li>Unlimited members</li>
-            <li>Renewal reminders</li>
-            <li>Advanced management</li>
-            <li>Priority support</li>
-          </ul>
+              <div className={styles.priceBlock}>
+                <span className={styles.currency}>₹</span>
+                <strong>{plan.price}</strong>
+                <span className={styles.period}>/ month</span>
+              </div>
 
-          <Link to="/signup?plan=business" className={styles.planButton}>
-            Get Started
-          </Link>
+              <div className={styles.capacity}>
+                <Check size={17} />
+                <strong>{plan.memberLimit}</strong>
+              </div>
+
+              <Link
+                to={`/signup?plan=${plan.slug}`}
+                className={`${styles.planButton} ${
+                  plan.featured ? styles.primaryButton : styles.secondaryButton
+                }`}
+              >
+                Choose {plan.name}
+                <ArrowRight size={18} />
+              </Link>
+
+              <div className={styles.divider} />
+
+              <p className={styles.includedLabel}>WHAT'S INCLUDED</p>
+
+              <ul className={styles.features}>
+                {plan.features.map((feature) => (
+                  <li key={feature}>
+                    <span className={styles.checkIcon}>
+                      <Check size={15} />
+                    </span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
+
+        <p className={styles.pricingNote}>
+          Prices shown in INR. Subscription billing and plan enforcement must be
+          enabled before paid launch.
+        </p>
       </div>
     </section>
   );
