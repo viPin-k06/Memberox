@@ -31,6 +31,22 @@ const getInitials = (name) =>
     .join("")
     .toUpperCase();
 
+const displayStatus = (status) => {
+  switch (status) {
+    case "sent":
+    case "delivered":
+      return "Sent";
+    case "simulated":
+      return "Simulated";
+    case "failed":
+      return "Failed";
+    case "processing":
+      return "Processing";
+    default:
+      return "Pending";
+  }
+};
+
 const Reminders = () => {
   const [reminders, setReminders] = useState([]);
   const [filter, setFilter] = useState("All");
@@ -51,38 +67,40 @@ const Reminders = () => {
 
       const { data: org, error: orgError } = await supabase
         .from("organizations")
-        .select("id, whatsapp_reminders_enabled, reminder_days_before")
+        .select("id, email_reminders_enabled, reminder_days_before")
         .eq("owner_id", authData.user.id)
         .single();
       if (orgError) throw orgError;
 
-      const [membersResult, membershipsResult, deliveriesResult] =
-        await Promise.all([
-          supabase
-            .from("members")
-            .select("id, name, mobile_number")
-            .eq("organization_id", org.id),
-          supabase
-            .from("memberships")
-            .select("id, member_id, expiry_date, created_at")
-            .eq("organization_id", org.id),
-          supabase
-            .from("whatsapp_reminder_logs")
-            .select(
-              "id, membership_id, member_id, reminder_date, sent_at, status",
-            )
-            .eq("organization_id", org.id)
-            .in("status", ["sent", "delivered"]),
-        ]);
+      const [membersResult, membershipsResult, logsResult] = await Promise.all([
+        supabase
+          .from("members")
+          .select("id, name, email")
+          .eq("organization_id", org.id),
+        supabase
+          .from("memberships")
+          .select("id, member_id, expiry_date, created_at")
+          .eq("organization_id", org.id),
+        supabase
+          .from("email_reminder_logs")
+          .select(
+            "id, membership_id, member_id, reminder_date, sent_at, status",
+          )
+          .eq("organization_id", org.id),
+      ]);
 
       const queryError =
-        membersResult.error ||
-        membershipsResult.error ||
-        deliveriesResult.error;
+        membersResult.error || membershipsResult.error || logsResult.error;
       if (queryError) throw queryError;
 
       const membersById = new Map(
         (membersResult.data || []).map((member) => [member.id, member]),
+      );
+      const membershipsById = new Map(
+        (membershipsResult.data || []).map((membership) => [
+          membership.id,
+          membership,
+        ]),
       );
       const latestByMember = new Map();
       for (const membership of membershipsResult.data || []) {
@@ -99,10 +117,14 @@ const Reminders = () => {
 
       const today = toDateKey(new Date());
       const leadDays = Number(org.reminder_days_before) || 3;
-      const isEnabled = Boolean(org.whatsapp_reminders_enabled);
-      const sentRows = deliveriesResult.data || [];
-      const sentKeys = new Set(
-        sentRows.map((log) => `${log.membership_id}|${log.reminder_date}`),
+      const isEnabled = Boolean(org.email_reminders_enabled);
+      const logs = logsResult.data || [];
+
+      // Any existing log (including simulated, failed, or processing) means
+      // this reminder was already claimed by the backend. Don't show it as
+      // an unsent pending reminder at the same time.
+      const loggedKeys = new Set(
+        logs.map((log) => `${log.membership_id}|${log.reminder_date}`),
       );
 
       const pending = [];
@@ -111,38 +133,37 @@ const Reminders = () => {
           const member = membersById.get(membership.member_id);
           if (
             !member ||
+            !member.email?.trim() ||
             !membership.expiry_date ||
             membership.expiry_date < today
-          )
+          ) {
             continue;
+          }
 
           const reminderDate = shiftDate(membership.expiry_date, -leadDays);
-          if (sentKeys.has(`${membership.id}|${reminderDate}`)) continue;
+          if (loggedKeys.has(`${membership.id}|${reminderDate}`)) continue;
 
           pending.push({
             id: `pending-${membership.id}-${reminderDate}`,
             member: member.name,
-            mobile: member.mobile_number,
+            email: member.email,
             expiryDate: membership.expiry_date,
             reminderDate,
             status: "Pending",
-            sentAt: null,
           });
         }
       }
 
-      const sent = sentRows.map((log) => {
+      const history = logs.map((log) => {
         const member = membersById.get(log.member_id);
-        const membership = (membershipsResult.data || []).find(
-          (row) => row.id === log.membership_id,
-        );
+        const membership = membershipsById.get(log.membership_id);
         return {
           id: log.id,
           member: member?.name || "Deleted member",
-          mobile: member?.mobile_number || "—",
+          email: member?.email || "—",
           expiryDate: membership?.expiry_date || null,
           reminderDate: log.reminder_date,
-          status: "Sent",
+          status: displayStatus(log.status),
           sentAt: log.sent_at,
         };
       });
@@ -150,7 +171,7 @@ const Reminders = () => {
       setEnabled(isEnabled);
       setDaysBefore(leadDays);
       setReminders(
-        [...pending, ...sent].sort(
+        [...pending, ...history].sort(
           (a, b) =>
             a.reminderDate.localeCompare(b.reminderDate) ||
             a.member.localeCompare(b.member),
@@ -172,6 +193,9 @@ const Reminders = () => {
     (item) => item.status === "Pending",
   ).length;
   const sentCount = reminders.filter((item) => item.status === "Sent").length;
+  const simulatedCount = reminders.filter(
+    (item) => item.status === "Simulated",
+  ).length;
   const today = toDateKey(new Date());
 
   const filtered = useMemo(
@@ -182,12 +206,29 @@ const Reminders = () => {
     [reminders, filter],
   );
 
+  const statusDescription = (reminder) => {
+    switch (reminder.status) {
+      case "Sent":
+        return `Email sent ${formatDate(reminder.reminderDate)}`;
+      case "Simulated":
+        return `Simulated ${formatDate(reminder.reminderDate)} — no email sent`;
+      case "Failed":
+        return `Sending failed for ${formatDate(reminder.reminderDate)}`;
+      case "Processing":
+        return `Processing reminder for ${formatDate(reminder.reminderDate)}`;
+      default:
+        return reminder.reminderDate <= today
+          ? `Due since ${formatDate(reminder.reminderDate)}`
+          : `Scheduled for ${formatDate(reminder.reminderDate)}`;
+    }
+  };
+
   return (
     <main className={styles.page}>
       <div className={styles.header}>
         <div>
           <h1>Reminders</h1>
-          <p>Keep track of membership expiry reminders sent on WhatsApp.</p>
+          <p>Track scheduled membership expiry emails and reminder history.</p>
         </div>
       </div>
 
@@ -209,17 +250,22 @@ const Reminders = () => {
       </section>
 
       <div className={styles.toolbar}>
-        {["All", "Pending", "Sent"].map((item) => (
-          <button
-            key={item}
-            type="button"
-            aria-pressed={filter === item}
-            className={filter === item ? styles.activeFilter : ""}
-            onClick={() => setFilter(item)}
-          >
-            {item}
-          </button>
-        ))}
+        {["All", "Pending", "Simulated", "Sent", "Failed", "Processing"].map(
+          (item) => (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={filter === item}
+              className={filter === item ? styles.activeFilter : ""}
+              onClick={() => setFilter(item)}
+            >
+              {item}
+            </button>
+          ),
+        )}
+        <button type="button" onClick={loadReminders} disabled={loading}>
+          Refresh
+        </button>
       </div>
 
       {loading && <p role="status">Loading reminders...</p>}
@@ -233,14 +279,15 @@ const Reminders = () => {
       )}
       {!loading && !error && !enabled && (
         <p>
-          WhatsApp reminders are disabled. Enable them in Settings to schedule
-          reminders.
+          Email reminders are disabled. Enable them in Settings to schedule new
+          reminders. Previous reminder history is still shown.
         </p>
       )}
       {!loading && !error && enabled && (
         <p>
           Reminder timing: {daysBefore} {daysBefore === 1 ? "day" : "days"}{" "}
-          before expiry. Automatic WhatsApp sending is not connected yet.
+          before expiry. Simulated reminders: {simulatedCount} (no email
+          delivered). Only members with an email address are eligible.
         </p>
       )}
 
@@ -254,15 +301,9 @@ const Reminders = () => {
                 </div>
                 <div>
                   <strong>{reminder.member}</strong>
-                  <span>{reminder.mobile}</span>
+                  <span>{reminder.email}</span>
                   <small>Expires {formatDate(reminder.expiryDate)}</small>
-                  <small>
-                    {reminder.status === "Sent"
-                      ? `Reminder sent ${formatDate(reminder.reminderDate)}`
-                      : reminder.reminderDate <= today
-                        ? `Due since ${formatDate(reminder.reminderDate)}`
-                        : `Scheduled for ${formatDate(reminder.reminderDate)}`}
-                  </small>
+                  <small>{statusDescription(reminder)}</small>
                 </div>
               </div>
               <div className={styles.actions}>

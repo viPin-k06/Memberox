@@ -9,7 +9,7 @@ const Settings = () => {
   const [ownerName, setOwnerName] = useState("");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
-  const [whatsapp, setWhatsapp] = useState(false);
+  const [emailReminders, setEmailReminders] = useState(false);
   const [daysBefore, setDaysBefore] = useState("3");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -32,7 +32,7 @@ const Settings = () => {
           supabase
             .from("organizations")
             .select(
-              "id, name, phone, whatsapp_reminders_enabled, reminder_days_before",
+              "id, name, phone, email_reminders_enabled, reminder_days_before",
             )
             .eq("owner_id", user.id)
             .single(),
@@ -53,7 +53,7 @@ const Settings = () => {
         setOwnerName(profileResult.data.full_name ?? "");
         setMobile(orgResult.data.phone ?? profileResult.data.phone ?? "");
         setEmail(user.email ?? "");
-        setWhatsapp(orgResult.data.whatsapp_reminders_enabled ?? false);
+        setEmailReminders(orgResult.data.email_reminders_enabled ?? false);
         setDaysBefore(String(orgResult.data.reminder_days_before ?? 3));
       } catch (err) {
         if (!cancelled) setError(err.message || "Unable to load settings.");
@@ -122,13 +122,13 @@ const Settings = () => {
       const { error: updateError } = await supabase
         .from("organizations")
         .update({
-          whatsapp_reminders_enabled: whatsapp,
+          email_reminders_enabled: emailReminders,
           reminder_days_before: Number(daysBefore),
         })
         .eq("id", organizationId)
         .eq("owner_id", userId);
       if (updateError) throw updateError;
-      setMessage("WhatsApp reminder preferences saved successfully.");
+      setMessage("Email reminder preferences saved successfully.");
     } catch (err) {
       setError(err.message || "Unable to save reminder settings.");
     } finally {
@@ -188,6 +188,8 @@ const Settings = () => {
                 Mobile Number
                 <input
                   type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
                   value={mobile}
                   readOnly
                   title="Your registered mobile number cannot be changed here."
@@ -211,7 +213,9 @@ const Settings = () => {
           <section className={styles.card}>
             <div className={styles.sectionHeader}>
               <h2>Reminder Preferences</h2>
-              <p>Choose when expiry reminders should be sent on WhatsApp.</p>
+              <p>
+                Choose when membership expiry reminders should be sent by email.
+              </p>
             </div>
 
             <form
@@ -220,14 +224,16 @@ const Settings = () => {
             >
               <div className={styles.toggleRow}>
                 <div>
-                  <strong>WhatsApp reminders</strong>
-                  <span>Send expiry reminders through WhatsApp.</span>
+                  <strong>Email reminders</strong>
+                  <span>
+                    Send expiry reminders to members with an email address.
+                  </span>
                 </div>
                 <input
                   type="checkbox"
-                  aria-label="WhatsApp reminders"
-                  checked={whatsapp}
-                  onChange={(event) => setWhatsapp(event.target.checked)}
+                  aria-label="Email reminders"
+                  checked={emailReminders}
+                  onChange={(event) => setEmailReminders(event.target.checked)}
                 />
               </div>
 
@@ -236,7 +242,7 @@ const Settings = () => {
                 <select
                   value={daysBefore}
                   onChange={(event) => setDaysBefore(event.target.value)}
-                  disabled={!whatsapp}
+                  disabled={!emailReminders}
                 >
                   <option value="1">1 day before</option>
                   <option value="3">3 days before</option>
