@@ -1,7 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Bell, Check } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Bell,
+  CheckCheck,
+  FlaskConical,
+  AlertCircle,
+  Clock3,
+  RefreshCw,
+  Sparkles,
+  Mail,
+  CalendarClock,
+  Info,
+  Settings2,
+  Inbox,
+} from "lucide-react";
 import { supabase } from "../lib/supabase";
 import styles from "./Reminders.module.css";
+
+const FILTERS = ["All", "Pending", "Simulated", "Sent", "Failed", "Processing"];
 
 const toDateKey = (date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -47,6 +62,14 @@ const displayStatus = (status) => {
   }
 };
 
+const STATUS_ICONS = {
+  Pending: Clock3,
+  Simulated: FlaskConical,
+  Sent: CheckCheck,
+  Failed: AlertCircle,
+  Processing: RefreshCw,
+};
+
 const Reminders = () => {
   const [reminders, setReminders] = useState([]);
   const [filter, setFilter] = useState("All");
@@ -58,7 +81,6 @@ const Reminders = () => {
   const loadReminders = useCallback(async () => {
     setLoading(true);
     setError("");
-
     try {
       const { data: authData, error: authError } =
         await supabase.auth.getUser();
@@ -120,13 +142,10 @@ const Reminders = () => {
       const isEnabled = Boolean(org.email_reminders_enabled);
       const logs = logsResult.data || [];
 
-      // Any existing log (including simulated, failed, or processing) means
-      // this reminder was already claimed by the backend. Don't show it as
-      // an unsent pending reminder at the same time.
+      // A claimed reminder is represented by its log, not by another pending row.
       const loggedKeys = new Set(
         logs.map((log) => `${log.membership_id}|${log.reminder_date}`),
       );
-
       const pending = [];
       if (isEnabled) {
         for (const membership of latestByMember.values()) {
@@ -136,13 +155,11 @@ const Reminders = () => {
             !member.email?.trim() ||
             !membership.expiry_date ||
             membership.expiry_date < today
-          ) {
+          )
             continue;
-          }
 
           const reminderDate = shiftDate(membership.expiry_date, -leadDays);
           if (loggedKeys.has(`${membership.id}|${reminderDate}`)) continue;
-
           pending.push({
             id: `pending-${membership.id}-${reminderDate}`,
             member: member.name,
@@ -186,18 +203,29 @@ const Reminders = () => {
   }, []);
 
   useEffect(() => {
+    // Fetching page data when the component mounts is intentional.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadReminders();
   }, [loadReminders]);
 
-  const pendingCount = reminders.filter(
-    (item) => item.status === "Pending",
-  ).length;
-  const sentCount = reminders.filter((item) => item.status === "Sent").length;
-  const simulatedCount = reminders.filter(
-    (item) => item.status === "Simulated",
-  ).length;
-  const today = toDateKey(new Date());
+  const counts = useMemo(() => {
+    const result = {
+      All: reminders.length,
+      Pending: 0,
+      Simulated: 0,
+      Sent: 0,
+      Failed: 0,
+      Processing: 0,
+    };
+    for (const reminder of reminders) {
+      if (Object.prototype.hasOwnProperty.call(result, reminder.status)) {
+        result[reminder.status] += 1;
+      }
+    }
+    return result;
+  }, [reminders]);
 
+  const today = toDateKey(new Date());
   const filtered = useMemo(
     () =>
       reminders.filter(
@@ -225,106 +253,192 @@ const Reminders = () => {
 
   return (
     <main className={styles.page}>
-      <div className={styles.header}>
+      <header className={styles.header}>
         <div>
+          <div className={styles.eyebrow}>
+            <Sparkles size={14} /> AUTOMATED COMMUNICATION
+          </div>
           <h1>Reminders</h1>
-          <p>Track scheduled membership expiry emails and reminder history.</p>
+          <p>Track upcoming membership expiry emails and delivery history.</p>
         </div>
-      </div>
+        <span className={styles.headerPill}>
+          <Bell size={16} /> Email reminders
+        </span>
+      </header>
 
-      <section className={styles.stats}>
-        <div className={styles.statCard}>
-          <Bell size={20} />
-          <div>
-            <span>Pending</span>
-            <strong>{pendingCount}</strong>
-          </div>
-        </div>
-        <div className={styles.statCard}>
-          <Check size={20} />
-          <div>
-            <span>Sent</span>
-            <strong>{sentCount}</strong>
-          </div>
-        </div>
+      <section className={styles.stats} aria-label="Reminder overview">
+        <article className={`${styles.statCard} ${styles.pendingStat}`}>
+          <span className={styles.statIcon}>
+            <Clock3 size={21} />
+          </span>
+          <span className={styles.statLabel}>Pending</span>
+          <strong>{loading ? "—" : counts.Pending}</strong>
+          <small>Awaiting scheduled processing</small>
+        </article>
+        <article className={`${styles.statCard} ${styles.sentStat}`}>
+          <span className={styles.statIcon}>
+            <CheckCheck size={21} />
+          </span>
+          <span className={styles.statLabel}>Sent</span>
+          <strong>{loading ? "—" : counts.Sent}</strong>
+          <small>Emails marked as sent</small>
+        </article>
+        <article className={`${styles.statCard} ${styles.simulatedStat}`}>
+          <span className={styles.statIcon}>
+            <FlaskConical size={21} />
+          </span>
+          <span className={styles.statLabel}>Simulated</span>
+          <strong>{loading ? "—" : counts.Simulated}</strong>
+          <small>Test runs · no email delivered</small>
+        </article>
+        <article className={`${styles.statCard} ${styles.failedStat}`}>
+          <span className={styles.statIcon}>
+            <AlertCircle size={21} />
+          </span>
+          <span className={styles.statLabel}>Failed</span>
+          <strong>{loading ? "—" : counts.Failed}</strong>
+          <small>Unsuccessful send attempts</small>
+        </article>
       </section>
 
-      <div className={styles.toolbar}>
-        {["All", "Pending", "Simulated", "Sent", "Failed", "Processing"].map(
-          (item) => (
-            <button
-              key={item}
-              type="button"
-              aria-pressed={filter === item}
-              className={filter === item ? styles.activeFilter : ""}
-              onClick={() => setFilter(item)}
-            >
-              {item}
-            </button>
-          ),
-        )}
-        <button type="button" onClick={loadReminders} disabled={loading}>
-          Refresh
-        </button>
-      </div>
-
-      {loading && <p role="status">Loading reminders...</p>}
-      {error && (
-        <p role="alert">
-          {error}{" "}
-          <button type="button" onClick={loadReminders}>
-            Retry
-          </button>
-        </p>
-      )}
-      {!loading && !error && !enabled && (
-        <p>
-          Email reminders are disabled. Enable them in Settings to schedule new
-          reminders. Previous reminder history is still shown.
-        </p>
-      )}
-      {!loading && !error && enabled && (
-        <p>
-          Reminder timing: {daysBefore} {daysBefore === 1 ? "day" : "days"}{" "}
-          before expiry. Simulated reminders: {simulatedCount} (no email
-          delivered). Only members with an email address are eligible.
-        </p>
-      )}
-
       {!loading && !error && (
-        <div className={styles.list}>
-          {filtered.map((reminder) => (
-            <article key={reminder.id} className={styles.card}>
-              <div className={styles.info}>
-                <div className={styles.avatar}>
-                  {getInitials(reminder.member)}
-                </div>
-                <div>
-                  <strong>{reminder.member}</strong>
-                  <span>{reminder.email}</span>
-                  <small>Expires {formatDate(reminder.expiryDate)}</small>
-                  <small>{statusDescription(reminder)}</small>
-                </div>
-              </div>
-              <div className={styles.actions}>
-                <span
-                  className={
-                    reminder.status === "Sent"
-                      ? styles.sentBadge
-                      : styles.pendingBadge
-                  }
-                >
-                  {reminder.status}
-                </span>
-              </div>
-            </article>
-          ))}
+        <div
+          className={`${styles.notice} ${enabled ? styles.enabledNotice : styles.disabledNotice}`}
+        >
+          <div className={styles.noticeIcon}>
+            {enabled ? <CalendarClock size={19} /> : <Settings2 size={19} />}
+          </div>
+          <div>
+            <strong>
+              {enabled ? "Email reminders enabled" : "Email reminders disabled"}
+            </strong>
+            <p>
+              {enabled
+                ? `Scheduled ${daysBefore} ${daysBefore === 1 ? "day" : "days"} before expiry. Only members with an email address are eligible. Simulated reminders do not send emails.`
+                : "Enable email reminders in Settings to schedule new reminders. Previous reminder history remains available."}
+            </p>
+          </div>
         </div>
       )}
 
-      {!loading && !error && filtered.length === 0 && (
-        <div className={styles.empty}>No reminders here.</div>
-      )}
+      <section
+        className={styles.historyPanel}
+        aria-labelledby="reminder-history-heading"
+      >
+        <div className={styles.panelHeading}>
+          <div>
+            <span className={styles.sectionEyebrow}>REMINDER ACTIVITY</span>
+            <h2 id="reminder-history-heading">Reminder history</h2>
+            <p>
+              Review scheduled reminders and the results of past email attempts.
+            </p>
+          </div>
+          <span className={styles.totalPill}>
+            {loading ? "Loading…" : `${counts.All} records`}
+          </span>
+        </div>
+
+        <div className={styles.toolbar}>
+          <div
+            className={styles.filters}
+            aria-label="Filter reminders by status"
+          >
+            {FILTERS.map((item) => (
+              <button
+                key={item}
+                type="button"
+                aria-pressed={filter === item}
+                className={filter === item ? styles.activeFilter : ""}
+                onClick={() => setFilter(item)}
+              >
+                {item}
+                <span className={styles.filterCount}>{counts[item]}</span>
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className={styles.refreshBtn}
+            onClick={loadReminders}
+            disabled={loading}
+          >
+            <RefreshCw size={16} /> Refresh
+          </button>
+        </div>
+
+        {loading && (
+          <div className={styles.message} role="status">
+            Loading reminders...
+          </div>
+        )}
+        {error && (
+          <div className={styles.errorBanner} role="alert">
+            <AlertCircle size={18} />
+            <span>{error}</span>
+            <button type="button" onClick={loadReminders}>
+              Retry
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <>
+            <div className={styles.list}>
+              {filtered.map((reminder) => {
+                const StatusIcon = STATUS_ICONS[reminder.status] || Info;
+                const badgeClass =
+                  {
+                    Pending: styles.pendingBadge,
+                    Sent: styles.sentBadge,
+                    Simulated: styles.simulatedBadge,
+                    Failed: styles.failedBadge,
+                    Processing: styles.processingBadge,
+                  }[reminder.status] || styles.pendingBadge;
+                return (
+                  <article key={reminder.id} className={styles.card}>
+                    <div className={styles.info}>
+                      <div className={styles.avatar}>
+                        {getInitials(reminder.member)}
+                      </div>
+                      <div className={styles.memberDetails}>
+                        <strong>{reminder.member}</strong>
+                        <span className={styles.email}>
+                          <Mail size={13} /> {reminder.email}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={styles.dateDetails}>
+                      <span className={styles.detailLabel}>
+                        MEMBERSHIP EXPIRY
+                      </span>
+                      <strong>{formatDate(reminder.expiryDate)}</strong>
+                      <small>{statusDescription(reminder)}</small>
+                    </div>
+                    <div className={styles.actions}>
+                      <span className={`${styles.statusBadge} ${badgeClass}`}>
+                        <StatusIcon size={14} /> {reminder.status}
+                      </span>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+            {filtered.length === 0 && (
+              <div className={styles.empty}>
+                <span className={styles.emptyIcon}>
+                  <Inbox size={26} />
+                </span>
+                <h3>No reminders found</h3>
+                <p>
+                  {filter === "All"
+                    ? "Reminder records will appear here when available."
+                    : `There are no ${filter.toLowerCase()} reminders to display.`}
+                </p>
+              </div>
+            )}
+          </>
+        )}
+      </section>
     </main>
   );
 };

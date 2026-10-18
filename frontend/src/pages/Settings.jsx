@@ -1,4 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  Sparkles,
+  Settings2,
+  Building2,
+  UserRound,
+  Phone,
+  Mail,
+  BellRing,
+  CalendarClock,
+  Save,
+  ShieldCheck,
+  CheckCircle2,
+  AlertCircle,
+  Info,
+  LockKeyhole,
+} from "lucide-react";
 import styles from "./Settings.module.css";
 import { supabase } from "../lib/supabase";
 
@@ -113,7 +129,7 @@ const Settings = () => {
 
   const saveNotifications = async (event) => {
     event.preventDefault();
-    if (!organizationId || savingNotifications) return;
+    if (!organizationId || !userId || savingNotifications) return;
     setMessage("");
     setError("");
     setSavingNotifications(true);
@@ -138,54 +154,95 @@ const Settings = () => {
 
   return (
     <main className={styles.page}>
-      <div className={styles.header}>
-        <h1>Settings</h1>
-        <p>Manage your gym and reminder preferences.</p>
-      </div>
+      <header className={styles.header}>
+        <div>
+          <div className={styles.eyebrow}>
+            <Sparkles size={14} /> ACCOUNT PREFERENCES
+          </div>
+          <h1>Settings</h1>
+          <p>
+            Manage your business information and membership reminder
+            preferences.
+          </p>
+        </div>
+        <span className={styles.headerPill}>
+          <Settings2 size={16} /> Workspace settings
+        </span>
+      </header>
 
-      {loading && <p role="status">Loading settings...</p>}
       {error && (
-        <div role="alert" className={styles.success}>
-          {error}
+        <div role="alert" className={styles.errorBanner}>
+          <AlertCircle size={19} /> <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => setError("")}
+            aria-label="Dismiss error"
+          >
+            ×
+          </button>
         </div>
       )}
       {message && (
-        <div
-          className={styles.success}
-          role="status"
-          onClick={() => setMessage("")}
-        >
-          {message}
+        <div role="status" className={styles.successBanner}>
+          <CheckCircle2 size={19} /> <span>{message}</span>
+          <button
+            type="button"
+            onClick={() => setMessage("")}
+            aria-label="Dismiss message"
+          >
+            ×
+          </button>
         </div>
       )}
 
-      {!loading && organizationId && (
-        <>
+      {loading ? (
+        <div className={styles.loading} role="status">
+          Loading your settings...
+        </div>
+      ) : organizationId ? (
+        <div className={styles.sections}>
           <section className={styles.card}>
             <div className={styles.sectionHeader}>
-              <h2>Business Details</h2>
-              <p>Information used across your Memberox account.</p>
+              <div className={`${styles.sectionIcon} ${styles.businessIcon}`}>
+                <Building2 size={22} />
+              </div>
+              <div>
+                <span className={styles.sectionEyebrow}>YOUR WORKSPACE</span>
+                <h2>Business details</h2>
+                <p>
+                  Keep your business and account owner information up to date.
+                </p>
+              </div>
             </div>
 
             <form className={styles.form} onSubmit={saveBusiness}>
-              <label>
-                Gym / Business Name
+              <label className={styles.field}>
+                <span>
+                  <Building2 size={15} /> Gym / Business Name
+                </span>
                 <input
                   value={gymName}
                   onChange={(event) => setGymName(event.target.value)}
+                  placeholder="Enter business name"
                   required
                 />
               </label>
-              <label>
-                Owner Name
+              <label className={styles.field}>
+                <span>
+                  <UserRound size={15} /> Owner Name
+                </span>
                 <input
                   value={ownerName}
                   onChange={(event) => setOwnerName(event.target.value)}
+                  placeholder="Enter owner name"
                   required
                 />
               </label>
-              <label>
-                Mobile Number
+              <label className={styles.field}>
+                <span>
+                  <Phone size={15} /> Mobile Number{" "}
+                  <LockKeyhole size={13} className={styles.lockIcon} />
+                </span>
                 <input
                   type="tel"
                   inputMode="numeric"
@@ -195,8 +252,11 @@ const Settings = () => {
                   title="Your registered mobile number cannot be changed here."
                 />
               </label>
-              <label>
-                Email
+              <label className={styles.field}>
+                <span>
+                  <Mail size={15} /> Email{" "}
+                  <LockKeyhole size={13} className={styles.lockIcon} />
+                </span>
                 <input
                   type="email"
                   value={email}
@@ -204,18 +264,38 @@ const Settings = () => {
                   title="Your sign-in email is managed through authentication."
                 />
               </label>
-              <button type="submit" disabled={savingBusiness}>
-                {savingBusiness ? "Saving..." : "Save Business Details"}
-              </button>
+              <div className={styles.formFooter}>
+                <span className={styles.helper}>
+                  <ShieldCheck size={16} /> Your account details are securely
+                  stored.
+                </span>
+                <button
+                  className={styles.saveButton}
+                  type="submit"
+                  disabled={savingBusiness}
+                >
+                  <Save size={17} />{" "}
+                  {savingBusiness ? "Saving..." : "Save business details"}
+                </button>
+              </div>
             </form>
           </section>
 
           <section className={styles.card}>
             <div className={styles.sectionHeader}>
-              <h2>Reminder Preferences</h2>
-              <p>
-                Choose when membership expiry reminders should be sent by email.
-              </p>
+              <div className={`${styles.sectionIcon} ${styles.reminderIcon}`}>
+                <BellRing size={22} />
+              </div>
+              <div>
+                <span className={styles.sectionEyebrow}>
+                  AUTOMATED COMMUNICATION
+                </span>
+                <h2>Reminder preferences</h2>
+                <p>
+                  Choose whether and when members receive expiry reminder
+                  emails.
+                </p>
+              </div>
             </div>
 
             <form
@@ -223,22 +303,32 @@ const Settings = () => {
               onSubmit={saveNotifications}
             >
               <div className={styles.toggleRow}>
-                <div>
-                  <strong>Email reminders</strong>
+                <div className={styles.toggleText}>
+                  <span className={styles.toggleTitle}>
+                    <BellRing size={17} /> Email reminders
+                  </span>
                   <span>
-                    Send expiry reminders to members with an email address.
+                    Enable membership expiry reminders for members with an email
+                    address.
                   </span>
                 </div>
-                <input
-                  type="checkbox"
-                  aria-label="Email reminders"
-                  checked={emailReminders}
-                  onChange={(event) => setEmailReminders(event.target.checked)}
-                />
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    aria-label="Email reminders"
+                    checked={emailReminders}
+                    onChange={(event) =>
+                      setEmailReminders(event.target.checked)
+                    }
+                  />
+                  <span className={styles.switchTrack} aria-hidden="true" />
+                </label>
               </div>
 
               <label className={styles.selectLabel}>
-                Send reminder before expiry
+                <span>
+                  <CalendarClock size={17} /> Send reminder before expiry
+                </span>
                 <select
                   value={daysBefore}
                   onChange={(event) => setDaysBefore(event.target.value)}
@@ -250,13 +340,32 @@ const Settings = () => {
                   <option value="7">7 days before</option>
                 </select>
               </label>
-              <button type="submit" disabled={savingNotifications}>
-                {savingNotifications ? "Saving..." : "Save Reminder Settings"}
-              </button>
+
+              <div className={styles.notice}>
+                <Info size={18} />
+                <span>
+                  Changes take effect after you save. Reminder delivery depends
+                  on your configured email service; simulated reminders do not
+                  send real emails.
+                </span>
+              </div>
+              <div className={styles.formFooter}>
+                <span className={styles.helper}>
+                  <ShieldCheck size={16} /> Preferences apply to your business.
+                </span>
+                <button
+                  className={styles.saveButton}
+                  type="submit"
+                  disabled={savingNotifications}
+                >
+                  <Save size={17} />{" "}
+                  {savingNotifications ? "Saving..." : "Save reminder settings"}
+                </button>
+              </div>
             </form>
           </section>
-        </>
-      )}
+        </div>
+      ) : null}
     </main>
   );
 };

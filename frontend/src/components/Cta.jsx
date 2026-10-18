@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./Cta.module.css";
 import { Link } from "react-router-dom";
 

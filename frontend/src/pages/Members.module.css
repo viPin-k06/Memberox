@@ -1,16 +1,22 @@
 .membersMain {
   --radius-sm: 0.5rem;
+
   --radius-md: 0.75rem;
+
   --radius-lg: 1rem;
 
   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+
   --shadow-md: 0 4px 12px -2px rgba(16, 24, 40, 0.1);
+
   --shadow-lg: 0 24px 48px -12px rgba(16, 24, 40, 0.28);
 
   --ring: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
 
   padding: 2rem;
+
   width: 100%;
+
   min-width: 0;
 }
 
@@ -18,16 +24,23 @@
 
 .membersHeader {
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   gap: 1rem;
+
   margin-bottom: 1.75rem;
 }
 
 .membersHeader h1 {
   font-size: 1.85rem;
+
   line-height: 1.2;
+
   letter-spacing: -0.02em;
+
   margin-bottom: 0.35rem;
 }
 
@@ -37,18 +50,25 @@
 
 .addMemberBtn {
   display: inline-flex;
+
   align-items: center;
+
   gap: 0.5rem;
 
   border: none;
+
   background-color: var(--primary);
+
   color: var(--white);
 
   padding: 0.75rem 1.1rem;
+
   border-radius: var(--radius-sm);
 
   font-weight: 600;
+
   cursor: pointer;
+
   box-shadow: var(--shadow-sm);
 
   transition:
@@ -59,6 +79,7 @@
 
 .addMemberBtn:hover {
   background-color: var(--primary-hover);
+
   box-shadow: var(--shadow-md);
 }
 
@@ -68,6 +89,7 @@
 
 .addMemberBtn:focus-visible {
   outline: none;
+
   box-shadow: var(--ring);
 }
 
@@ -75,25 +97,35 @@
 
 .membersToolbar {
   display: flex;
+
   align-items: center;
+
   gap: 0.75rem;
+
   margin-bottom: 1.25rem;
 }
 
 .memberSearch {
   display: flex;
+
   align-items: center;
+
   gap: 0.75rem;
 
   flex: 1;
+
   max-width: 32rem;
 
   height: 2.8rem;
+
   padding: 0 1rem;
 
   background-color: var(--white);
+
   color: var(--text-secondary);
+
   border: 1px solid var(--input-border);
+
   border-radius: var(--radius-md);
 
   transition:
@@ -103,15 +135,21 @@
 
 .memberSearch:focus-within {
   border-color: var(--primary);
+
   box-shadow: var(--ring);
 }
 
 .memberSearch input {
   width: 100%;
+
   border: none;
+
   outline: none;
+
   background: transparent;
+
   font-size: 0.95rem;
+
   color: var(--text);
 }
 
@@ -121,19 +159,25 @@
 
 .memberFilterBtn {
   display: flex;
+
   align-items: center;
+
   gap: 0.5rem;
 
   height: 2.8rem;
+
   padding: 0 1rem;
 
   background-color: var(--white);
+
   color: var(--text);
 
   border: 1px solid var(--input-border);
+
   border-radius: var(--radius-md);
 
   font-weight: 500;
+
   cursor: pointer;
 
   transition:
@@ -147,21 +191,29 @@
 
 .memberFilterBtn:focus-visible {
   outline: none;
+
   border-color: var(--primary);
+
   box-shadow: var(--ring);
 }
 
 .filterMenu {
   position: absolute;
+
   top: calc(100% + 0.5rem);
+
   right: 0;
 
   min-width: 10rem;
+
   padding: 0.25rem;
 
   background-color: var(--white);
+
   border: 1px solid var(--border);
+
   border-radius: var(--radius-md);
+
   box-shadow: var(--shadow-lg);
 
   z-index: 10;
@@ -169,14 +221,19 @@
 
 .filterMenu button {
   display: block;
+
   width: 100%;
 
   padding: 0.6rem 0.85rem;
 
   border: none;
+
   border-radius: 0.4rem;
+
   background: none;
+
   color: var(--text);
+
   text-align: left;
 
   cursor: pointer;
@@ -185,6 +242,7 @@
 .filterMenu button:hover,
 .filterMenu button:focus-visible {
   outline: none;
+
   background-color: var(--nav-background);
 }
 
@@ -192,35 +250,48 @@
 
 .membersTableWrapper {
   background-color: var(--white);
+
   border: 1px solid var(--border);
+
   border-radius: var(--radius-md);
+
   box-shadow: var(--shadow-sm);
+
   overflow-x: auto;
 }
 
 .membersTable {
   width: 100%;
+
   min-width: 40rem;
+
   border-collapse: collapse;
 }
 
 .membersTable th,
 .membersTable td {
   padding: 0.95rem 1.25rem;
+
   text-align: left;
+
   border-bottom: 1px solid var(--border);
 }
 
 .membersTable th {
   font-size: 0.82rem;
+
   color: var(--text-secondary);
+
   font-weight: 600;
+
   background-color: var(--nav-background);
+
   white-space: nowrap;
 }
 
 .membersTable td {
   font-size: 0.95rem;
+
   font-variant-numeric: tabular-nums;
 }
 
@@ -247,6 +318,7 @@
 .memberRow:focus-visible,
 .memberMobileCard:focus-visible {
   outline: 2px solid var(--primary);
+
   outline-offset: -2px;
 }
 
@@ -254,37 +326,49 @@
 
 .status {
   display: inline-flex;
+
   align-items: center;
+
   gap: 0.4rem;
 
   padding: 0.28rem 0.65rem;
+
   border-radius: 999px;
 
   font-size: 0.8rem;
+
   font-weight: 600;
+
   white-space: nowrap;
 }
 
 .status::before {
   content: "";
+
   width: 0.45rem;
+
   height: 0.45rem;
+
   border-radius: 50%;
+
   background-color: currentColor;
 }
 
 .statusActive {
   background-color: #dcfce7;
+
   color: #166534;
 }
 
 .statusExpiring {
   background-color: #fef3c7;
+
   color: #92400e;
 }
 
 .statusExpired {
   background-color: #fee2e2;
+
   color: #991b1b;
 }
 
@@ -292,13 +376,17 @@
 
 .emptyState {
   margin-top: 1rem;
+
   padding: 2.5rem 1rem;
 
   text-align: center;
+
   color: var(--text-secondary);
+
   font-size: 0.95rem;
 
   border: 1px dashed var(--border);
+
   border-radius: var(--radius-md);
 }
 
@@ -310,21 +398,29 @@
 
 .memberMobileCard {
   display: grid;
+
   grid-template-columns: auto 1fr;
+
   grid-template-areas:
     "avatar info"
     "avatar details";
 
   align-items: center;
+
   gap: 0.5rem 1rem;
 
   background-color: var(--white);
+
   border: 1px solid var(--border);
+
   border-radius: var(--radius-md);
+
   box-shadow: var(--shadow-sm);
+
   padding: 1rem;
 
   cursor: pointer;
+
   transition:
     box-shadow 0.15s ease,
     transform 0.1s ease;
@@ -332,6 +428,7 @@
 
 .memberMobileCard:active {
   transform: scale(0.99);
+
   box-shadow: none;
 }
 
@@ -339,35 +436,47 @@
   grid-area: avatar;
 
   width: 3rem;
+
   height: 3rem;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   border-radius: 50%;
+
   background-color: var(--nav-background);
+
   color: var(--primary);
+
   font-weight: 700;
+
   letter-spacing: 0.02em;
 }
 
 .memberMobileInfo {
   grid-area: info;
+
   min-width: 0;
 }
 
 .memberMobileInfo strong {
   display: block;
+
   margin-bottom: 0.15rem;
 
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
 .memberMobileInfo p {
   color: var(--text-secondary);
+
   font-size: 0.9rem;
 }
 
@@ -375,14 +484,19 @@
   grid-area: details;
 
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   gap: 1rem;
 }
 
 .memberMobileExpiry {
   color: var(--text-secondary);
+
   font-size: 0.88rem;
+
   font-variant-numeric: tabular-nums;
 }
 
@@ -390,30 +504,40 @@
 
 .memberModal {
   position: fixed;
+
   inset: 0;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   padding: 1rem;
+
   background-color: rgba(16, 24, 40, 0.5);
+
   backdrop-filter: blur(2px);
 
   z-index: 100;
+
   animation: modalFade 0.15s ease-out;
 }
 
 .memberModalContent,
 .memberDetailsModal {
   width: 100%;
+
   max-height: 90vh;
 
   overflow-y: auto;
+
   overscroll-behavior: contain;
 
   background-color: var(--white);
+
   border-radius: var(--radius-lg);
+
   box-shadow: var(--shadow-lg);
 
   animation: modalPop 0.18s ease-out;
@@ -425,46 +549,63 @@
 
 .memberDetailsModal {
   max-width: 36rem;
+
   padding-bottom: 1.5rem;
 }
 
 /* Header stays visible while the content scrolls */
+
 .memberModalHeader {
   position: sticky;
+
   top: 0;
+
   z-index: 1;
 
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   padding: 1.1rem 1.5rem;
+
   margin-bottom: 1.25rem;
 
   background-color: var(--white);
+
   border-bottom: 1px solid var(--border);
 }
 
 .memberModalHeader h2 {
   font-size: 1.25rem;
+
   letter-spacing: -0.01em;
 }
 
 .memberModalHeader button {
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
 
   width: 2rem;
+
   height: 2rem;
 
   border: none;
+
   border-radius: 50%;
+
   background: none;
+
   color: var(--text-secondary);
 
   font-size: 1.4rem;
+
   line-height: 1;
+
   cursor: pointer;
 
   transition:
@@ -474,11 +615,13 @@
 
 .memberModalHeader button:hover {
   background-color: var(--nav-background);
+
   color: var(--text);
 }
 
 .memberModalHeader button:focus-visible {
   outline: none;
+
   box-shadow: var(--ring);
 }
 
@@ -486,7 +629,9 @@
 
 .memberModalContent form {
   display: grid;
+
   grid-template-columns: 1fr 1fr;
+
   gap: 1rem;
 
   padding: 0 1.5rem 1.5rem;
@@ -494,24 +639,32 @@
 
 .memberModalContent label {
   display: flex;
+
   flex-direction: column;
+
   gap: 0.4rem;
 
   font-size: 0.88rem;
+
   font-weight: 600;
 }
 
 .memberModalContent input,
 .memberModalContent select {
   width: 100%;
+
   padding: 0.7rem 0.8rem;
 
   border: 1px solid var(--input-border);
+
   border-radius: var(--radius-sm);
 
   background-color: var(--white);
+
   color: var(--text);
+
   font-size: 0.95rem;
+
   font-weight: 400;
 
   transition:
@@ -527,57 +680,75 @@
 .memberModalContent input:focus,
 .memberModalContent select:focus {
   outline: none;
+
   border-color: var(--primary);
+
   box-shadow: var(--ring);
 }
 
 .memberModalContent input::placeholder {
   color: var(--text-secondary);
+
   opacity: 0.7;
 }
 
 /* Info lines inside forms (amount to collect, due date, notes) */
+
 .memberModalContent form > p {
   grid-column: 1 / -1;
+
   margin: 0;
 
   padding: 0.7rem 0.9rem;
+
   border-radius: var(--radius-sm);
 
   background-color: var(--nav-background);
+
   color: var(--text);
 
   font-size: 0.9rem;
+
   line-height: 1.45;
+
   font-variant-numeric: tabular-nums;
 }
 
 /* Inline validation message */
+
 .formError {
   grid-column: 1 / -1;
+
   margin: 0;
 
   padding: 0.7rem 0.9rem;
+
   border-radius: var(--radius-sm);
+
   border: 1px solid #fecaca;
 
   background-color: #fee2e2;
+
   color: var(--error);
 
   font-size: 0.9rem;
+
   font-weight: 500;
 }
 
 /* "Old due date / Payment date" switch on the renew form */
+
 .choiceGroup {
   grid-column: 1 / -1;
 
   display: flex;
+
   gap: 0.25rem;
 
   padding: 0.25rem;
 
   background-color: var(--nav-background);
+
   border-radius: var(--radius-md);
 }
 
@@ -586,17 +757,23 @@
   flex: 1;
 
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   gap: 0.15rem;
 
   border: none;
+
   border-radius: var(--radius-sm);
 
   padding: 0.6rem 0.75rem;
 
   font-size: 0.9rem;
+
   font-weight: 600;
+
   cursor: pointer;
 
   transition:
@@ -608,12 +785,15 @@
 .choiceBtn small,
 .choiceBtnActive small {
   font-size: 0.75rem;
+
   font-weight: 500;
+
   font-variant-numeric: tabular-nums;
 }
 
 .choiceBtn {
   background: transparent;
+
   color: var(--text-secondary);
 }
 
@@ -623,13 +803,16 @@
 
 .choiceBtnActive {
   background-color: var(--white);
+
   color: var(--primary);
+
   box-shadow: var(--shadow-sm);
 }
 
 .choiceBtn:focus-visible,
 .choiceBtnActive:focus-visible {
   outline: none;
+
   box-shadow: var(--ring);
 }
 
@@ -639,15 +822,19 @@
   margin-top: 0.25rem;
 
   border: none;
+
   border-radius: var(--radius-sm);
 
   background-color: var(--primary);
+
   color: var(--white);
 
   padding: 0.85rem 1rem;
 
   font-size: 0.95rem;
+
   font-weight: 600;
+
   cursor: pointer;
 
   transition:
@@ -666,12 +853,15 @@
 
 .modalSubmitBtn:focus-visible {
   outline: none;
+
   box-shadow: var(--ring);
 }
 
 .modalSubmitBtn:disabled {
   opacity: 0.5;
+
   cursor: not-allowed;
+
   transform: none;
 }
 
@@ -683,7 +873,9 @@
 
 .memberDetails {
   display: grid;
+
   grid-template-columns: 1fr 1fr;
+
   gap: 0.75rem;
 
   margin: 0 1.5rem;
@@ -691,31 +883,41 @@
 
 .memberDetails > div {
   display: flex;
+
   flex-direction: column;
+
   gap: 0.25rem;
 
   min-width: 0;
+
   padding: 0.85rem 0.95rem;
 
   background-color: var(--background);
+
   border: 1px solid var(--border);
+
   border-radius: var(--radius-sm);
 }
 
 .memberDetails span {
   color: var(--text-secondary);
+
   font-size: 0.8rem;
 }
 
 .memberDetails strong {
   font-size: 0.95rem;
+
   font-variant-numeric: tabular-nums;
+
   overflow-wrap: anywhere;
 }
 
 .memberDetailsActions {
   display: flex;
+
   flex-wrap: wrap;
+
   gap: 0.75rem;
 
   margin: 1.5rem 1.5rem 0;
@@ -725,11 +927,13 @@
 .renewMemberBtn,
 .deleteMemberBtn {
   border: none;
+
   border-radius: var(--radius-sm);
 
   padding: 0.75rem 1.1rem;
 
   font-weight: 600;
+
   cursor: pointer;
 
   transition:
@@ -749,15 +953,19 @@
 .renewMemberBtn:focus-visible,
 .deleteMemberBtn:focus-visible {
   outline: none;
+
   box-shadow: var(--ring);
 }
 
 /* Main action first */
+
 .renewMemberBtn {
   order: -1;
 
   background-color: var(--primary);
+
   color: var(--white);
+
   box-shadow: var(--shadow-sm);
 }
 
@@ -767,6 +975,7 @@
 
 .editMemberBtn {
   background-color: var(--nav-background);
+
   color: var(--primary);
 }
 
@@ -778,6 +987,7 @@
   margin-left: auto;
 
   background-color: #fee2e2;
+
   color: var(--error);
 }
 
@@ -789,6 +999,7 @@
 
 .paymentHistory {
   margin: 1.5rem 1.5rem 0;
+
   padding-top: 1.25rem;
 
   border-top: 1px solid var(--border);
@@ -796,17 +1007,21 @@
 
 .paymentHistory h3 {
   margin-bottom: 0.75rem;
+
   font-size: 1rem;
 }
 
 .paymentHistoryItem {
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   gap: 1rem;
 
   padding: 0.75rem 0;
+
   border-bottom: 1px solid var(--border);
 }
 
@@ -816,17 +1031,21 @@
 
 .paymentHistoryItem > div {
   display: flex;
+
   flex-direction: column;
+
   gap: 0.2rem;
 }
 
 .paymentHistoryItem > div > strong {
   color: var(--text);
+
   font-variant-numeric: tabular-nums;
 }
 
 .paymentHistoryItem span {
   color: var(--text-secondary);
+
   font-size: 0.85rem;
 }
 
@@ -841,6 +1060,7 @@
 @keyframes modalPop {
   from {
     opacity: 0;
+
     transform: translateY(8px) scale(0.98);
   }
 }
@@ -868,9 +1088,11 @@
   }
 }
 
-/* ==========================================================================
-   Mobile
-   ========================================================================== */
+/* ==========================================================================*
+
+*&#xA0;  Mobile*
+
+*&#xA0;  ========================================================================== */
 
 @media (max-width: 768px) {
   .membersMain {
@@ -879,7 +1101,9 @@
 
   .membersHeader {
     flex-direction: column;
+
     align-items: stretch;
+
     margin-bottom: 1.25rem;
   }
 
@@ -889,17 +1113,21 @@
 
   .addMemberBtn {
     justify-content: center;
+
     width: 100%;
   }
 
   .membersToolbar {
     flex-direction: column;
+
     align-items: stretch;
   }
 
   .memberSearch {
     flex: none;
+
     width: 100%;
+
     max-width: none;
   }
 
@@ -909,11 +1137,13 @@
 
   .memberFilterBtn {
     justify-content: center;
+
     width: 100%;
   }
 
   .filterMenu {
     left: 0;
+
     right: 0;
   }
 
@@ -923,36 +1153,45 @@
 
   .membersMobileList {
     display: flex;
+
     flex-direction: column;
+
     gap: 0.75rem;
   }
 
   /* Modals become bottom sheets */
+
   .memberModal {
     align-items: flex-end;
+
     padding: 0;
   }
 
   .memberModalContent,
   .memberDetailsModal {
     max-width: none;
+
     max-height: 92vh;
 
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+
     animation: sheetUp 0.22s ease-out;
   }
 
   .memberModalHeader {
     padding: 1rem;
+
     margin-bottom: 1rem;
   }
 
   .memberModalContent form {
     grid-template-columns: 1fr;
+
     padding: 0 1rem 1.25rem;
   }
 
   /* 16px stops iOS from zooming into inputs */
+
   .memberModalContent input,
   .memberModalContent select {
     font-size: 1rem;
@@ -964,12 +1203,15 @@
 
   .memberDetails {
     grid-template-columns: 1fr 1fr;
+
     margin: 0 1rem;
   }
 
   /* Renew first, Edit second, Delete last (order comes from .renewMemberBtn) */
+
   .memberDetailsActions {
     flex-direction: column;
+
     margin: 1.25rem 1rem 0;
   }
 
@@ -977,7 +1219,9 @@
   .renewMemberBtn,
   .deleteMemberBtn {
     width: 100%;
+
     margin-left: 0;
+
     padding: 0.85rem 1rem;
   }
 
@@ -1002,5 +1246,380 @@
     .memberDetailsModal {
       animation: none;
     }
+  }
+}
+
+/* ================================================================
+   MEMBEROX · Colorful member directory refresh
+   ================================================================ */
+.membersMain {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.membersHeader {
+  margin-bottom: 1.5rem;
+}
+.pageEyebrow,
+.directoryEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--primary);
+  margin-bottom: 0.7rem;
+}
+.membersHeader h1 {
+  font-size: clamp(1.8rem, 3vw, 2.25rem);
+  letter-spacing: -0.045em;
+}
+.membersHeader p {
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.addMemberBtn {
+  border-radius: 0.8rem;
+  padding: 0.85rem 1.15rem;
+  background: linear-gradient(115deg, #6d28d9, #9333ea);
+  box-shadow: 0 7px 20px rgba(109, 40, 217, 0.22);
+  white-space: nowrap;
+}
+.addMemberBtn:hover {
+  background: linear-gradient(115deg, #5b21b6, #7c3aed);
+  box-shadow: 0 10px 24px rgba(109, 40, 217, 0.26);
+  transform: translateY(-1px);
+}
+.addMemberBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+.memberStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.memberStatCard {
+  min-width: 0;
+  min-height: 164px;
+  padding: 1.15rem 1.25rem;
+  border-radius: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 22px rgba(39, 20, 81, 0.045);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.memberStatCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(39, 20, 81, 0.09);
+}
+.statTotal {
+  background: linear-gradient(130deg, #efe6ff, #faf6ff);
+  color: #6d28d9;
+}
+.statActive {
+  background: linear-gradient(130deg, #d9f9ef, #f3fdf9);
+  color: #0d9488;
+}
+.statExpiring {
+  background: linear-gradient(130deg, #fff0d7, #fffaf2);
+  color: #ea580c;
+}
+.statExpired {
+  background: linear-gradient(130deg, #ffe4ee, #fff6fa);
+  color: #e11d48;
+}
+.statTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0.88;
+  margin-bottom: 0.8rem;
+}
+.statIcon {
+  display: grid;
+  place-items: center;
+  width: 2.65rem;
+  height: 2.65rem;
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 3px 10px rgba(32, 20, 60, 0.04);
+}
+.statLabel {
+  display: block;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 650;
+  margin-bottom: 0.25rem;
+}
+.memberStatCard strong {
+  display: block;
+  color: #15121f;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+}
+.memberStatCard small {
+  display: block;
+  color: #64748b;
+  font-size: 0.73rem;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+.directoryPanel {
+  background: var(--white);
+  border: 1px solid #e9e7f1;
+  border-radius: 1.1rem;
+  padding: 1.4rem;
+  box-shadow: 0 5px 20px rgba(39, 20, 81, 0.035);
+  min-width: 0;
+}
+.directoryHeading {
+  margin-bottom: 1.25rem;
+}
+.directoryEyebrow {
+  font-size: 0.63rem;
+  margin-bottom: 0.3rem;
+}
+.directoryHeading h2 {
+  font-size: 1.15rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+.directoryHeading p {
+  margin-top: 0.25rem;
+  color: var(--text-secondary);
+  font-size: 0.83rem;
+}
+.membersToolbar {
+  margin-bottom: 1rem;
+}
+.memberSearch {
+  max-width: none;
+  height: 3rem;
+  background: #faf9ff;
+  border-color: #e8e3f1;
+  border-radius: 0.75rem;
+}
+.memberSearch:focus-within {
+  background: var(--white);
+}
+.memberFilterBtn {
+  height: 3rem;
+  border-radius: 0.75rem;
+  border-color: #e8e3f1;
+  font-weight: 600;
+}
+.filterMenu {
+  border-radius: 0.8rem;
+}
+.filterMenu button[aria-pressed="true"] {
+  background: #f1e8ff;
+  color: #6d28d9;
+  font-weight: 700;
+}
+.membersTableWrapper {
+  border-radius: 0.8rem;
+  border-color: #efedf5;
+  box-shadow: none;
+}
+.membersTable {
+  min-width: 39rem;
+}
+.membersTable th {
+  background: #f8f6fd;
+  color: #64748b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.membersTable td {
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+.membersTable tbody tr:hover {
+  background: #faf7ff;
+}
+.tableMember {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.tableAvatar {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 0.8rem;
+  background: linear-gradient(140deg, #e9d5ff, #f5edff);
+  color: #6d28d9;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.tableMember > div {
+  min-width: 0;
+}
+.tableMember strong {
+  display: block;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+.tableMember small {
+  display: block;
+  margin-top: 0.15rem;
+  color: #64748b;
+  font-size: 0.75rem;
+}
+.planPill {
+  display: inline-block;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.55rem;
+  background: #f5f3ff;
+  color: #6d28d9;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+.rowArrow {
+  color: #a78bfa;
+}
+.membersTable tbody tr:hover .rowArrow {
+  color: #6d28d9;
+}
+.status {
+  font-size: 0.74rem;
+}
+.memberMobileCard {
+  border-radius: 0.9rem;
+  border-color: #ebe8f4;
+  box-shadow: 0 4px 14px rgba(39, 20, 81, 0.045);
+}
+.memberAvatar {
+  background: linear-gradient(140deg, #e9d5ff, #f5edff);
+}
+.memberMobileInfo p {
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.memberMobileExpiry {
+  font-size: 0.78rem;
+}
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 2.5rem 1rem;
+  border-color: #e8e3f1;
+}
+.emptyState svg {
+  color: #8b5cf6;
+}
+.emptyState strong {
+  color: var(--text);
+  font-size: 1rem;
+}
+.emptyState p {
+  max-width: 25rem;
+  line-height: 1.5;
+}
+.loadingMessage {
+  padding: 1rem 0;
+  color: var(--text-secondary);
+}
+.memberModalContent,
+.memberDetailsModal {
+  border: 1px solid #eae6f4;
+}
+.memberModalHeader {
+  background: linear-gradient(115deg, #faf7ff, #fff);
+}
+.modalSubmitBtn {
+  background: linear-gradient(115deg, #6d28d9, #9333ea);
+  border-radius: 0.7rem;
+}
+.modalSubmitBtn:hover {
+  background: linear-gradient(115deg, #5b21b6, #7c3aed);
+}
+@media (max-width: 1150px) {
+  .memberStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 768px) {
+  .membersMain {
+    padding: 1rem;
+  }
+  .membersHeader {
+    gap: 1rem;
+  }
+  .memberStats {
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+  }
+  .memberStatCard {
+    padding: 0.95rem;
+    min-height: 145px;
+    border-radius: 0.9rem;
+  }
+  .statIcon {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 0.65rem;
+  }
+  .statIcon svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+  .statTop {
+    margin-bottom: 0.55rem;
+  }
+  .memberStatCard strong {
+    font-size: 1.6rem;
+  }
+  .memberStatCard small {
+    font-size: 0.68rem;
+  }
+  .directoryPanel {
+    padding: 1rem;
+    border-radius: 0.9rem;
+  }
+  .membersToolbar {
+    gap: 0.65rem;
+  }
+  .memberMobileCard {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .memberMobileDetails {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+}
+@media (max-width: 360px) {
+  .memberStats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .memberStatCard {
+    min-height: 0;
+  }
+  .memberMobileCard {
+    gap: 0.5rem;
+    padding: 0.8rem;
+  }
+  .memberAvatar {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .memberStatCard,
+  .addMemberBtn {
+    transition: none;
   }
 }

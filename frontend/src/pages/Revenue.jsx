@@ -1,9 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Banknote,
+  CalendarDays,
+  ChartNoAxesCombined,
+  CircleDollarSign,
+  CreditCard,
+  IndianRupee,
+  Landmark,
+  RefreshCw,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
 import styles from "./Revenue.module.css";
 import { supabase } from "../lib/supabase";
 
 const PAYMENT_MODE_NAMES = ["UPI", "Cash", "Card", "Bank Transfer"];
 const PAGE_SIZE = 1000;
+const MODE_ICONS = {
+  UPI: Wallet,
+  Cash: Banknote,
+  Card: CreditCard,
+  "Bank Transfer": Landmark,
+};
 
 const formatCurrency = (amount) =>
   `₹${Number(amount).toLocaleString("en-IN", {
@@ -61,8 +81,7 @@ const Revenue = () => {
           .single();
         if (orgError) throw orgError;
 
-        // Supabase limits the rows returned in one request. Fetch every page
-        // so totals remain accurate as the number of payments grows.
+        // Fetch every page to keep totals accurate beyond Supabase's row limit.
         const allPayments = [];
         let offset = 0;
 
@@ -147,115 +166,216 @@ const Revenue = () => {
     };
   }, [payments]);
 
+  const kpis = [
+    {
+      label: "This Month",
+      value: summary.currentMonth,
+      note:
+        summary.growth === null
+          ? "No revenue recorded last month"
+          : `${summary.growth >= 0 ? "+" : ""}${summary.growth.toFixed(1)}% vs last month`,
+      Icon: ChartNoAxesCombined,
+      variant: "purple",
+      growth: summary.growth,
+    },
+    {
+      label: "Last Month",
+      value: summary.previousMonth,
+      note: `${summary.previousMonthLabel} revenue`,
+      Icon: CalendarDays,
+      variant: "blue",
+    },
+    {
+      label: "Total Collected",
+      value: summary.totalCollected,
+      note: "All recorded payments",
+      Icon: Wallet,
+      variant: "green",
+    },
+    {
+      label: "Average Payment",
+      value: summary.averagePayment,
+      note: "Current month",
+      Icon: IndianRupee,
+      variant: "orange",
+    },
+  ];
+
   return (
     <main className={styles.page}>
-      <div className={styles.header}>
+      <header className={styles.header}>
         <div>
+          <div className={styles.eyebrow}>
+            <Sparkles size={14} /> FINANCIAL ANALYTICS
+          </div>
           <h1>Revenue</h1>
           <p>Track membership income and payment performance.</p>
         </div>
-      </div>
+        <span className={styles.headerPill}>
+          <CircleDollarSign size={16} /> Payment insights
+        </span>
+      </header>
 
-      {loading && <p role="status">Loading revenue...</p>}
+      {loading && (
+        <div className={styles.loadingState} role="status">
+          Loading revenue...
+        </div>
+      )}
       {error && (
-        <p role="alert">
-          {error}{" "}
+        <div className={styles.errorState} role="alert">
+          <span>{error}</span>
           <button type="button" onClick={() => setRefreshKey((key) => key + 1)}>
-            Retry
+            <RefreshCw size={16} /> Retry
           </button>
-        </p>
+        </div>
       )}
 
       {!loading && !error && (
         <>
-          <section className={styles.stats}>
-            <div className={styles.statCard}>
-              <span>This Month</span>
-              <strong>{formatCurrency(summary.currentMonth)}</strong>
-              <small>
-                {summary.growth === null
-                  ? "No revenue recorded last month"
-                  : `${summary.growth >= 0 ? "+" : ""}${summary.growth.toFixed(1)}% vs last month`}
-              </small>
-            </div>
-
-            <div className={styles.statCard}>
-              <span>Last Month</span>
-              <strong>{formatCurrency(summary.previousMonth)}</strong>
-              <small>{summary.previousMonthLabel} revenue</small>
-            </div>
-
-            <div className={styles.statCard}>
-              <span>Total Collected</span>
-              <strong>{formatCurrency(summary.totalCollected)}</strong>
-              <small>All recorded payments</small>
-            </div>
-
-            <div className={styles.statCard}>
-              <span>Average Payment</span>
-              <strong>{formatCurrency(summary.averagePayment)}</strong>
-              <small>Current month</small>
-            </div>
+          <section className={styles.stats} aria-label="Revenue statistics">
+            {kpis.map(({ label, value, note, Icon, variant, growth }) => (
+              <article
+                key={label}
+                className={`${styles.statCard} ${styles[variant]}`}
+              >
+                <div className={styles.statTop}>
+                  <div className={styles.statIcon}>
+                    <Icon size={21} />
+                  </div>
+                  <span className={styles.statDecoration}>
+                    <ArrowUpRight size={19} />
+                  </span>
+                </div>
+                <span className={styles.statLabel}>{label}</span>
+                <strong className={styles.statValue}>
+                  {formatCurrency(value)}
+                </strong>
+                <small className={styles.statNote}>
+                  {growth !== undefined &&
+                    growth !== null &&
+                    (growth >= 0 ? (
+                      <ArrowUpRight size={14} />
+                    ) : (
+                      <ArrowDownRight size={14} />
+                    ))}
+                  {note}
+                </small>
+              </article>
+            ))}
           </section>
 
           <div className={styles.grid}>
-            <section className={styles.panel}>
+            <section
+              className={styles.panel}
+              aria-labelledby="monthly-revenue-heading"
+            >
               <div className={styles.panelHeader}>
                 <div>
-                  <h2>Monthly Revenue</h2>
-                  <p>Last 6 months</p>
+                  <span className={styles.panelEyebrow}>REVENUE TREND</span>
+                  <h2 id="monthly-revenue-heading">Monthly Revenue</h2>
+                  <p>Last 6 months of recorded payments</p>
+                </div>
+                <div className={styles.panelIcon}>
+                  <ChartNoAxesCombined size={20} />
                 </div>
               </div>
-
-              <div className={styles.chart}>
-                {summary.months.map((item) => (
-                  <div key={item.key} className={styles.barGroup}>
+              <div className={styles.chartSummary}>
+                <span>Current month</span>
+                <strong>{formatCurrency(summary.currentMonth)}</strong>
+              </div>
+              <div
+                className={styles.chart}
+                role="group"
+                aria-label={`Revenue for the last six months: ${summary.months.map((item) => `${item.label}: ${formatCurrency(item.amount)}`).join(", ")}`}
+              >
+                {summary.months.map((item, index) => (
+                  <div
+                    key={item.key}
+                    className={styles.barGroup}
+                    tabIndex={0}
+                    aria-label={`${item.label}: ${formatCurrency(item.amount)}`}
+                  >
                     <div className={styles.barArea}>
-                      <div
-                        className={styles.bar}
-                        style={{
-                          height: `${(item.amount / summary.maxRevenue) * 100}%`,
-                        }}
-                        title={`${item.label}: ${formatCurrency(item.amount)}`}
-                      />
+                      <div className={styles.barTrack}>
+                        <div
+                          className={`${styles.bar} ${index === 5 ? styles.currentBar : ""}`}
+                          style={{
+                            height: `${Math.max(0, (item.amount / summary.maxRevenue) * 100)}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-                    <span>{item.month}</span>
+                    <div className={styles.barTooltip} aria-hidden="true">
+                      <span>{item.label}</span>
+                      <strong>{formatCurrency(item.amount)}</strong>
+                    </div>
+                    <span className={styles.barLabel}>{item.month}</span>
                   </div>
                 ))}
               </div>
+              <div className={styles.chartFootnote}>
+                <span className={styles.legendDot} /> Recorded revenue in INR
+              </div>
             </section>
 
-            <section className={styles.panel}>
+            <section
+              className={styles.panel}
+              aria-labelledby="payment-modes-heading"
+            >
               <div className={styles.panelHeader}>
                 <div>
-                  <h2>Payment Modes</h2>
+                  <span className={styles.panelEyebrow}>PAYMENT BREAKDOWN</span>
+                  <h2 id="payment-modes-heading">Payment Modes</h2>
                   <p>Current month</p>
+                </div>
+                <div className={styles.panelIcon}>
+                  <CreditCard size={20} />
                 </div>
               </div>
 
               <div className={styles.modeList}>
-                {summary.modes.map((item) => {
+                {summary.modes.map((item, index) => {
                   const percent =
                     summary.currentMonth > 0
                       ? Math.round((item.amount / summary.currentMonth) * 100)
                       : 0;
-
+                  const Icon = MODE_ICONS[item.mode];
                   return (
-                    <div key={item.mode} className={styles.modeItem}>
+                    <div
+                      key={item.mode}
+                      className={`${styles.modeItem} ${styles[`mode${index}`]}`}
+                    >
                       <div className={styles.modeTop}>
-                        <span>{item.mode}</span>
+                        <div className={styles.modeName}>
+                          <div className={styles.modeIcon}>
+                            <Icon size={17} />
+                          </div>
+                          <span>{item.mode}</span>
+                        </div>
                         <strong>{formatCurrency(item.amount)}</strong>
                       </div>
-
-                      <div className={styles.progress}>
-                        <div style={{ width: `${percent}%` }} />
+                      <div
+                        className={styles.progress}
+                        role="progressbar"
+                        aria-label={`${item.mode} share of revenue`}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={percent}
+                      >
+                        <div
+                          style={{
+                            width: `${Math.max(0, Math.min(100, percent))}%`,
+                          }}
+                        />
                       </div>
-
                       <small>{percent}% of revenue</small>
                     </div>
                   );
                 })}
               </div>
+              <p className={styles.modeFootnote}>
+                Based on recorded payments this month.
+              </p>
             </section>
           </div>
         </>

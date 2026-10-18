@@ -1,5 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Search,
+  Wallet,
+  ReceiptText,
+  CreditCard,
+  Sparkles,
+  ArrowUpRight,
+  Filter,
+  CalendarDays,
+  UserRound,
+  Banknote,
+  Landmark,
+  Smartphone,
+  RefreshCw,
+  X,
+} from "lucide-react";
 import { supabase } from "../lib/supabase";
 import styles from "./Payments.module.css";
 
@@ -21,8 +36,25 @@ const formatDate = (date) =>
       })
     : "—";
 
-// Supabase/PostgREST returns at most 1,000 rows by default.
-// Fetch pages so older payments aren't silently excluded from totals.
+const localDateKey = (date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+const getModeIcon = (mode) => {
+  switch (mode) {
+    case "UPI":
+      return Smartphone;
+    case "Cash":
+      return Banknote;
+    case "Card":
+      return CreditCard;
+    case "Bank Transfer":
+      return Landmark;
+    default:
+      return Wallet;
+  }
+};
+
+// Fetch all pages to prevent older records being omitted from totals.
 const fetchAllRows = async (table, columns, organizationId) => {
   const rows = [];
   let start = 0;
@@ -90,9 +122,9 @@ const Payments = () => {
       }))
       .sort(
         (a, b) =>
-          b.date.localeCompare(a.date) ||
-          b.createdAt.localeCompare(a.createdAt) ||
-          b.id.localeCompare(a.id),
+          (b.date || "").localeCompare(a.date || "") ||
+          (b.createdAt || "").localeCompare(a.createdAt || "") ||
+          String(b.id).localeCompare(String(a.id)),
       );
   }, []);
 
@@ -136,102 +168,275 @@ const Payments = () => {
     [filteredPayments],
   );
 
+  const monthTotal = useMemo(() => {
+    const now = new Date();
+    const month = localDateKey(now).slice(0, 7);
+    return payments.reduce(
+      (sum, payment) =>
+        sum + (payment.date?.startsWith(month) ? payment.amount : 0),
+      0,
+    );
+  }, [payments]);
+
+  const isFiltered = search.trim() !== "" || mode !== "All";
+
   return (
     <main className={styles.page}>
-      <div className={styles.header}>
+      <header className={styles.header}>
         <div>
+          <div className={styles.eyebrow}>
+            <Sparkles size={14} /> TRANSACTION HISTORY
+          </div>
           <h1>Payments</h1>
-          <p>View all membership and renewal payments.</p>
+          <p>View and explore membership and renewal payments.</p>
         </div>
-      </div>
+        <div className={styles.headerPill}>
+          <ReceiptText size={16} /> Payment records
+        </div>
+      </header>
 
-      <div className={styles.summary}>
-        <span>Showing {filteredPayments.length} payments</span>
-        <strong>{formatCurrency(total)}</strong>
-      </div>
+      <section className={styles.stats} aria-label="Payment overview">
+        <article className={`${styles.statCard} ${styles.purpleStat}`}>
+          <div className={styles.statTop}>
+            <span className={styles.statIcon}>
+              <Wallet size={21} />
+            </span>
+            <ArrowUpRight size={18} className={styles.statArrow} />
+          </div>
+          <span className={styles.statLabel}>Total Collected</span>
+          <strong>
+            {loading
+              ? "—"
+              : formatCurrency(
+                  payments.reduce((sum, payment) => sum + payment.amount, 0),
+                )}
+          </strong>
+          <small>All recorded payments</small>
+        </article>
+        <article className={`${styles.statCard} ${styles.blueStat}`}>
+          <div className={styles.statTop}>
+            <span className={styles.statIcon}>
+              <CalendarDays size={21} />
+            </span>
+            <ArrowUpRight size={18} className={styles.statArrow} />
+          </div>
+          <span className={styles.statLabel}>This Month</span>
+          <strong>{loading ? "—" : formatCurrency(monthTotal)}</strong>
+          <small>Payments recorded this month</small>
+        </article>
+        <article className={`${styles.statCard} ${styles.greenStat}`}>
+          <div className={styles.statTop}>
+            <span className={styles.statIcon}>
+              <ReceiptText size={21} />
+            </span>
+            <ArrowUpRight size={18} className={styles.statArrow} />
+          </div>
+          <span className={styles.statLabel}>Transactions</span>
+          <strong>
+            {loading ? "—" : payments.length.toLocaleString("en-IN")}
+          </strong>
+          <small>Total payment records</small>
+        </article>
+      </section>
 
-      <div className={styles.toolbar}>
-        <div className={styles.search}>
-          <Search size={18} />
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search member..."
-            aria-label="Search payments by member"
-          />
+      <section
+        className={styles.recordsSection}
+        aria-labelledby="payments-heading"
+      >
+        <div className={styles.sectionHeader}>
+          <div>
+            <span className={styles.sectionEyebrow}>PAYMENT ACTIVITY</span>
+            <h2 id="payments-heading">Payment history</h2>
+            <p>Find transactions by member name or payment method.</p>
+          </div>
+          <span className={styles.recordCount}>
+            {loading
+              ? "Loading…"
+              : `${filteredPayments.length} ${filteredPayments.length === 1 ? "payment" : "payments"}`}
+          </span>
         </div>
 
-        <select value={mode} onChange={(event) => setMode(event.target.value)}>
-          <option value="All">All payment modes</option>
-          {PAYMENT_MODES.map((paymentMode) => (
-            <option key={paymentMode} value={paymentMode}>
-              {paymentMode}
-            </option>
-          ))}
-        </select>
-      </div>
+        <div className={styles.toolbar}>
+          <label className={styles.search}>
+            <Search size={19} aria-hidden="true" />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search member name..."
+              aria-label="Search payments by member"
+            />
+            {search && (
+              <button
+                type="button"
+                className={styles.clearSearch}
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </label>
+          <label className={styles.filterWrap}>
+            <Filter size={17} aria-hidden="true" />
+            <select
+              value={mode}
+              onChange={(event) => setMode(event.target.value)}
+              aria-label="Filter by payment mode"
+            >
+              <option value="All">All payment modes</option>
+              {PAYMENT_MODES.map((paymentMode) => (
+                <option key={paymentMode} value={paymentMode}>
+                  {paymentMode}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
-      {loading && <p role="status">Loading payments...</p>}
-      {error && (
-        <p role="alert">
-          {error}{" "}
-          <button type="button" onClick={() => setReloadKey((key) => key + 1)}>
-            Retry
-          </button>
-        </p>
-      )}
-
-      {!loading && !error && (
-        <>
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Member</th>
-                  <th>Type</th>
-                  <th>Mode</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredPayments.map((payment) => (
-                  <tr key={payment.id}>
-                    <td>{payment.member}</td>
-                    <td>
-                      <span className={styles.typeBadge}>{payment.type}</span>
-                    </td>
-                    <td>{payment.mode}</td>
-                    <td>{formatDate(payment.date)}</td>
-                    <td>{formatCurrency(payment.amount)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {error && (
+          <div className={styles.errorBanner} role="alert">
+            <span>{error}</span>
+            <button
+              type="button"
+              onClick={() => setReloadKey((key) => key + 1)}
+            >
+              <RefreshCw size={15} /> Retry
+            </button>
           </div>
+        )}
 
-          <div className={styles.mobileList}>
-            {filteredPayments.map((payment) => (
-              <article key={payment.id} className={styles.mobileCard}>
-                <div>
-                  <strong>{payment.member}</strong>
-                  <span>{payment.type}</span>
-                </div>
-                <div>
-                  <strong>{formatCurrency(payment.amount)}</strong>
-                  <span>
-                    {payment.mode} · {formatDate(payment.date)}
-                  </span>
-                </div>
-              </article>
-            ))}
+        {loading ? (
+          <div className={styles.emptyState} role="status">
+            Loading payments...
           </div>
+        ) : (
+          !error && (
+            <>
+              <div className={styles.filterSummary}>
+                <div className={styles.summaryLeft}>
+                  <span className={styles.summaryDot} />{" "}
+                  {isFiltered ? "Filtered results" : "All transactions"}{" "}
+                  <span className={styles.summaryDivider}>·</span>{" "}
+                  {filteredPayments.length} payments
+                </div>
+                <div className={styles.summaryRight}>
+                  <span>Showing total</span>
+                  <strong>{formatCurrency(total)}</strong>
+                </div>
+              </div>
 
-          {filteredPayments.length === 0 && (
-            <div className={styles.empty}>No payments found.</div>
-          )}
-        </>
-      )}
+              {filteredPayments.length > 0 ? (
+                <>
+                  <div className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                      <thead>
+                        <tr>
+                          <th>MEMBER</th>
+                          <th>PAYMENT TYPE</th>
+                          <th>METHOD</th>
+                          <th>DATE</th>
+                          <th className={styles.amountCol}>AMOUNT</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredPayments.map((payment) => {
+                          const ModeIcon = getModeIcon(payment.mode);
+                          return (
+                            <tr key={payment.id}>
+                              <td>
+                                <div className={styles.memberCell}>
+                                  <span className={styles.avatar}>
+                                    <UserRound size={17} />
+                                  </span>
+                                  <strong>{payment.member}</strong>
+                                </div>
+                              </td>
+                              <td>
+                                <span className={styles.typeBadge}>
+                                  {payment.type || "Payment"}
+                                </span>
+                              </td>
+                              <td>
+                                <span
+                                  className={`${styles.modeBadge} ${styles[`mode${(payment.mode || "").replace(/\s/g, "")}`] || ""}`}
+                                >
+                                  <ModeIcon size={15} /> {payment.mode || "—"}
+                                </span>
+                              </td>
+                              <td className={styles.dateCell}>
+                                {formatDate(payment.date)}
+                              </td>
+                              <td className={styles.amountCell}>
+                                {formatCurrency(payment.amount)}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className={styles.mobileList}>
+                    {filteredPayments.map((payment) => {
+                      const ModeIcon = getModeIcon(payment.mode);
+                      return (
+                        <article key={payment.id} className={styles.mobileCard}>
+                          <div className={styles.mobileTop}>
+                            <div className={styles.memberCell}>
+                              <span className={styles.avatar}>
+                                <UserRound size={17} />
+                              </span>
+                              <strong>{payment.member}</strong>
+                            </div>
+                            <strong className={styles.mobileAmount}>
+                              {formatCurrency(payment.amount)}
+                            </strong>
+                          </div>
+                          <div className={styles.mobileBottom}>
+                            <span className={styles.typeBadge}>
+                              {payment.type || "Payment"}
+                            </span>
+                            <span className={styles.mobileMode}>
+                              <ModeIcon size={14} />
+                              {payment.mode || "—"}
+                            </span>
+                            <span className={styles.mobileDate}>
+                              {formatDate(payment.date)}
+                            </span>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyIcon}>
+                    <ReceiptText size={26} />
+                  </div>
+                  <h3>No payments found</h3>
+                  <p>
+                    {isFiltered
+                      ? "Try another member name or payment method."
+                      : "Payments will appear here once they are recorded."}
+                  </p>
+                  {isFiltered && (
+                    <button
+                      type="button"
+                      className={styles.resetButton}
+                      onClick={() => {
+                        setSearch("");
+                        setMode("All");
+                      }}
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          )
+        )}
+      </section>
     </main>
   );
 };
