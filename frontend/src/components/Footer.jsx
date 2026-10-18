@@ -25,18 +25,18 @@ const Footer = () => {
 
           <div className={styles.linkGroups}>
             <div className={styles.linkGroup}>
-              <h3>Explore</h3>
-
-              <a href="#features">Features</a>
-              <a href="#how-it-works">How it works</a>
-              <a href="#pricing">Pricing</a>
+              <h3>Legal & Support</h3>
+              <Link to="/privacy">Privacy Policy</Link>
+              <Link to="/terms">Terms of Service</Link>
+              <Link to="/refund-policy">Refund & Cancellation</Link>
+              <Link to="/faq">Help & FAQ</Link>
             </div>
 
             <div className={styles.linkGroup}>
-              <h3>Get started</h3>
+              <h3>Company</h3>
 
-              <Link to="/login">Log in</Link>
-              <Link to="/signup">Create an account</Link>
+              <Link to="/about">About us</Link>
+              <Link to="/contact">Contact us</Link>
             </div>
 
             <div className={styles.footerAction}>

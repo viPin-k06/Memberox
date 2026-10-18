@@ -1,0 +1,342 @@
+.aboutPage {
+  background: var(--background);
+  color: var(--text);
+}
+
+.eyebrow {
+  display: inline-block;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+/* Hero */
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 7rem 2rem 8rem;
+}
+
+.heroContent h1 {
+  max-width: 690px;
+  margin: 1.5rem 0;
+  font-size: clamp(2.8rem, 5vw, 4.6rem);
+  font-weight: 850;
+  line-height: 1.1;
+  letter-spacing: -0.055em;
+}
+
+.heroContent h1 span,
+.sectionIntro h2 span,
+.audienceHeader h2 span,
+.bottomSection h2 span {
+  color: var(--primary);
+}
+
+.heroDescription {
+  max-width: 540px;
+  margin-bottom: 2rem;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.85;
+}
+
+.primaryButton,
+.bottomButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 0.95rem 1.5rem;
+  border-radius: 0.75rem;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.primaryButton:hover,
+.bottomButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+/* Hero visual */
+
+.heroVisual {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  border: 1px solid #e9dffc;
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(circle at 90% 10%, #e6d7ff, transparent 50%), #f2ecfc;
+}
+
+.visualHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+  color: #655679;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.visualDot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.visualCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid #eee8f5;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(56, 30, 89, 0.04);
+}
+
+.visualIcon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.8rem;
+  background: #f0e8ff;
+  color: var(--primary);
+}
+
+.visualCard strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.visualCard p {
+  margin: 0;
+  color: #797184;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.checkIcon {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--primary);
+}
+
+.visualCaption {
+  margin-top: 0.5rem;
+  color: #9b8caf;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-align: center;
+}
+
+/* Story */
+
+.storySection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  padding: 6rem max(2rem, calc((100% - 1216px) / 2));
+  background: #ffffff;
+}
+
+.sectionIntro h2,
+.audienceHeader h2,
+.bottomSection h2 {
+  margin: 1.2rem 0 0;
+  font-size: clamp(2.1rem, 3.5vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.045em;
+}
+
+.storyContent p {
+  margin: 0 0 1.25rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.storyContent p:last-child {
+  margin-bottom: 0;
+}
+
+/* Audience */
+
+.audienceSection {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 7rem 2rem;
+}
+
+.audienceHeader {
+  max-width: 650px;
+  margin-bottom: 3rem;
+}
+
+.audienceHeader p {
+  margin: 1.25rem 0 0;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.audienceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.audienceCard {
+  min-height: 240px;
+  padding: 2rem;
+  border: 1px solid #e9e5f0;
+  border-radius: 1.25rem;
+  background: #ffffff;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.audienceCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(40, 25, 65, 0.06);
+}
+
+.cardNumber {
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.audienceCard h3 {
+  margin: 2rem 0 0.75rem;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.audienceCard p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+/* Bottom CTA */
+
+.bottomSection {
+  padding: 6rem 2rem 7rem;
+  background: #ede6fa;
+  text-align: center;
+}
+
+.bottomSection h2 {
+  margin: 1.5rem auto;
+}
+
+.bottomSection p {
+  max-width: 520px;
+  margin: 0 auto 2rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* Responsive */
+
+@media (max-width: 1000px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding-top: 5rem;
+  }
+
+  .heroVisual {
+    max-width: 650px;
+    width: 100%;
+  }
+
+  .storySection {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 5rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 4rem 1rem 5rem;
+  }
+
+  .heroContent h1 {
+    font-size: clamp(2.4rem, 9vw, 3.5rem);
+  }
+
+  .heroVisual {
+    padding: 1.25rem;
+  }
+
+  .storySection {
+    padding: 4rem 1rem;
+  }
+
+  .audienceSection {
+    padding: 5rem 1rem;
+  }
+
+  .audienceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .audienceCard {
+    min-height: auto;
+  }
+
+  .bottomSection {
+    padding: 5rem 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .visualCard {
+    padding: 1rem;
+    gap: 0.7rem;
+  }
+
+  .visualIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .checkIcon {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryButton,
+  .bottomButton,
+  .audienceCard {
+    transition: none;
+  }
+}

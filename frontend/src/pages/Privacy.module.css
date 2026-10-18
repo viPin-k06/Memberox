@@ -1,0 +1,255 @@
+.page {
+  background: var(--background);
+  color: var(--text);
+}
+
+.hero {
+  padding: 4.5rem 2rem 5rem;
+  background:
+    radial-gradient(ellipse at 85% 15%, #e9dcff 0%, transparent 45%),
+    var(--background);
+}
+
+.heroInner {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 3rem;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--primary);
+}
+
+.heroIcon {
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  margin-bottom: 1.5rem;
+  border-radius: 1rem;
+  background: #ede3ff;
+  color: var(--primary);
+}
+
+.eyebrow {
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.hero h1 {
+  margin: 1rem 0 1.25rem;
+  font-size: clamp(2.8rem, 5vw, 4.5rem);
+  font-weight: 850;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+}
+
+.hero h1 span {
+  color: var(--primary);
+}
+
+.heroDescription {
+  max-width: 650px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.draftNotice {
+  max-width: 680px;
+  margin-top: 2.25rem;
+  padding: 1.15rem 1.4rem;
+  border: 1px solid #e6d9fa;
+  border-radius: 0.85rem;
+  background: #f4edff;
+}
+
+.draftNotice strong {
+  color: #6d28d9;
+  font-size: 0.88rem;
+}
+
+.draftNotice p {
+  margin: 0.4rem 0 0;
+  color: #655674;
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+/* Main layout */
+
+.contentSection {
+  padding: 5rem 2rem 7rem;
+  background: #ffffff;
+}
+
+.contentLayout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 5rem;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.sidebarInner {
+  position: sticky;
+  top: 2rem;
+}
+
+.sidebarTitle {
+  display: block;
+  margin-bottom: 1.5rem;
+  color: #8d829c;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-left: 1rem;
+  border-left: 1px solid #e9e3f0;
+}
+
+.sidebar a {
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebar a:hover {
+  background: #f5efff;
+  color: var(--primary);
+}
+
+.article {
+  min-width: 0;
+}
+
+.policySection {
+  margin-bottom: 3rem;
+  scroll-margin-top: 2rem;
+}
+
+.policySection h2 {
+  margin: 0 0 1.25rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.policySection p {
+  margin: 0 0 1rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.95;
+}
+
+.policySection p:last-child {
+  margin-bottom: 0;
+}
+
+/* Contact card */
+
+.contactCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 4rem;
+  padding: 2rem;
+  border: 1px solid #e9dffc;
+  border-radius: 1.25rem;
+  background: #f3edfc;
+}
+
+.contactCard h2 {
+  margin: 0.75rem 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.contactCard p {
+  max-width: 400px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.contactButton {
+  flex-shrink: 0;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.7rem;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.contactButton:hover {
+  background: var(--primary-hover);
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .contentLayout {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .backLink {
+    margin-bottom: 2rem;
+  }
+
+  .contentSection {
+    padding: 4rem 1rem 5rem;
+  }
+
+  .contactCard {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar a,
+  .contactButton {
+    transition: none;
+  }
+}
