@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
-import styles from "./Auth.module.css";
+import { ArrowRight, Check, Eye, EyeOff, LockKeyhole } from "lucide-react";
+
 import { supabase } from "../lib/supabase";
+import styles from "./Auth.module.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -49,60 +50,84 @@ const Login = () => {
 
   return (
     <main className={styles.authPage}>
+      {/* LEFT BRANDING PANEL */}
       <section className={styles.brandSection}>
         <Link to="/" className={styles.logo}>
-          Memberox
+          <span className={styles.logoMark}>M</span>
+          <span>Memberox</span>
         </Link>
 
         <div className={styles.brandContent}>
           <span className={styles.badge}>
-            Membership management made simple
+            <span className={styles.badgeDot} />
+            BUILT FOR GROWING BUSINESSES
           </span>
 
-          <h1>Run your gym without the membership chaos.</h1>
+          <h1>
+            Your business.
+            <br />
+            <span>Better organized.</span>
+          </h1>
 
           <p>
-            Keep members, payments, renewals and reminders organized in one
-            simple dashboard.
+            Everything you need to manage memberships, track renewals, and stay
+            on top of your business — all in one place.
           </p>
 
           <div className={styles.benefits}>
             <div>
-              <span>01</span>
-              <p>Manage all your members in one place</p>
+              <span className={styles.benefitIcon}>
+                <Check size={17} />
+              </span>
+              <p>All your members in one workspace</p>
             </div>
 
             <div>
-              <span>02</span>
-              <p>Track payments and membership renewals</p>
+              <span className={styles.benefitIcon}>
+                <Check size={17} />
+              </span>
+              <p>Stay ahead of membership expiries</p>
             </div>
 
             <div>
-              <span>03</span>
-              <p>Never miss an upcoming membership expiry</p>
+              <span className={styles.benefitIcon}>
+                <Check size={17} />
+              </span>
+              <p>Keep your records organized</p>
             </div>
           </div>
         </div>
 
-        <p className={styles.brandFooter}>© 2026 Memberox</p>
+        <div className={styles.brandFooter}>
+          <span>© 2026 Memberox</span>
+          <span>Made for businesses in India</span>
+        </div>
       </section>
 
+      {/* RIGHT LOGIN PANEL */}
       <section className={styles.formSection}>
         <div className={styles.formContainer}>
           <div className={styles.mobileLogo}>
-            <Link to="/">Memberox</Link>
+            <Link to="/">
+              <span className={styles.logoMark}>M</span>
+              <span>Memberox</span>
+            </Link>
           </div>
 
           <div className={styles.formHeader}>
-            <span className={styles.eyebrow}>Welcome back</span>
+            <span className={styles.eyebrow}>WELCOME BACK</span>
 
-            <h2>Log in to Memberox</h2>
+            <h2>Log in to your account</h2>
 
-            <p>Enter your details to access your dashboard.</p>
+            <p>Enter your credentials to access your Memberox dashboard.</p>
           </div>
 
           <form onSubmit={submitHandler} className={styles.form}>
-            {error && <div className={styles.error}>{error}</div>}
+            {error && (
+              <div className={styles.error} role="alert">
+                {error}
+              </div>
+            )}
 
             <label className={styles.field}>
               <span>Email address</span>
@@ -113,11 +138,18 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
+                required
               />
             </label>
 
             <div className={styles.field}>
-              <label htmlFor="password">Password</label>
+              <div className={styles.fieldHeading}>
+                <label htmlFor="password">Password</label>
+
+                <Link to="/forgot-password" className={styles.forgotButton}>
+                  Forgot password?
+                </Link>
+              </div>
 
               <div className={styles.passwordField}>
                 <input
@@ -127,27 +159,19 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
+                  required
                 />
 
                 <button
                   type="button"
                   className={styles.passwordToggle}
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
                 >
                   {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
                 </button>
               </div>
-
-              <button
-                type="button"
-                className={styles.forgotButton}
-                onClick={() =>
-                  alert("Password reset will be added with the backend.")
-                }
-              >
-                Forgot password?
-              </button>
             </div>
 
             <button
@@ -155,13 +179,20 @@ const Login = () => {
               className={styles.submitButton}
               disabled={loading}
             >
-              {loading ? "Logging in..." : "Log In"}
+              <span>{loading ? "Logging in..." : "Log in"}</span>
+
+              {!loading && <ArrowRight size={18} />}
             </button>
           </form>
 
           <p className={styles.switchText}>
-            Don't have an account? <Link to="/signup">Create an account</Link>
+            New to Memberox? <Link to="/signup">Create an account</Link>
           </p>
+
+          <div className={styles.formFooter}>
+            <LockKeyhole size={15} />
+            <span>Secure account authentication</span>
+          </div>
         </div>
       </section>
     </main>
