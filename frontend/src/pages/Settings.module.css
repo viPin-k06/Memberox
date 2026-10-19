@@ -1,3 +1,7 @@
+/* =========================================
+   PAGE LAYOUT
+========================================= */
+
 .page {
   width: 100%;
   min-width: 0;
@@ -5,6 +9,7 @@
   box-sizing: border-box;
   padding: 2rem;
 }
+
 .header {
   display: flex;
   align-items: center;
@@ -12,19 +17,22 @@
   gap: 1rem;
   margin-bottom: 1.65rem;
 }
+
 .eyebrow,
 .sectionEyebrow {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  color: #7c3aed;
+  color: var(--primary, #7c3aed);
   font-weight: 800;
   font-size: 0.72rem;
   letter-spacing: 0.095em;
 }
+
 .eyebrow {
   margin-bottom: 0.8rem;
 }
+
 .header h1 {
   font-size: 2rem;
   line-height: 1.15;
@@ -32,6 +40,7 @@
   color: var(--text, #1f1f1f);
   letter-spacing: -0.045em;
 }
+
 .header p,
 .sectionHeader p {
   color: var(--text-secondary, #667085);
@@ -39,6 +48,7 @@
   line-height: 1.5;
   font-size: 0.94rem;
 }
+
 .headerPill {
   display: inline-flex;
   align-items: center;
@@ -52,10 +62,16 @@
   font-weight: 750;
   white-space: nowrap;
 }
+
 .sections {
   display: grid;
   gap: 1.4rem;
 }
+
+/* =========================================
+   CARDS AND SECTION HEADERS
+========================================= */
+
 .card {
   min-width: 0;
   background: var(--white, #fff);
@@ -64,6 +80,7 @@
   padding: 1.5rem;
   box-shadow: 0 10px 32px rgba(34, 28, 74, 0.035);
 }
+
 .sectionHeader {
   display: flex;
   align-items: center;
@@ -72,6 +89,7 @@
   margin-bottom: 1.45rem;
   border-bottom: 1px solid #eff0f6;
 }
+
 .sectionIcon {
   width: 3.2rem;
   height: 3.2rem;
@@ -80,25 +98,39 @@
   flex-shrink: 0;
   border-radius: 1rem;
 }
+
 .businessIcon {
   background: linear-gradient(145deg, #eee2ff, #f7efff);
   color: #7c3aed;
 }
+
 .reminderIcon {
   background: linear-gradient(145deg, #ddf7f0, #edfcf8);
   color: #079b7f;
 }
+
+.billingIcon {
+  background: linear-gradient(145deg, #ede4ff, #f7f1ff);
+  color: #7c3aed;
+}
+
 .sectionHeader h2 {
   margin: 0.32rem 0 0.3rem;
   font-size: 1.24rem;
   color: var(--text, #1f1f1f);
   letter-spacing: -0.025em;
 }
+
+/* =========================================
+   BUSINESS FORM
+========================================= */
+
 .form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.2rem 1.4rem;
 }
+
 .field,
 .selectLabel {
   display: flex;
@@ -106,6 +138,7 @@
   gap: 0.6rem;
   min-width: 0;
 }
+
 .field > span,
 .selectLabel > span {
   display: flex;
@@ -115,10 +148,12 @@
   font-size: 0.85rem;
   color: #344054;
 }
+
 .lockIcon {
   color: #98a2b3;
   margin-left: auto;
 }
+
 .field input,
 .selectLabel select {
   width: 100%;
@@ -137,18 +172,21 @@
     border-color 0.2s,
     box-shadow 0.2s;
 }
+
 .field input:focus,
 .selectLabel select:focus {
   border-color: #a78bfa;
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
+
 .field input[readonly] {
   color: #697586;
   background: #f8f9fc;
   cursor: not-allowed;
 }
+
 .formFooter {
-  grid-column: 1/-1;
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -158,6 +196,7 @@
   border-top: 1px solid #eff0f6;
   margin-top: 0.25rem;
 }
+
 .helper {
   display: inline-flex;
   align-items: center;
@@ -165,10 +204,12 @@
   font-size: 0.8rem;
   color: #8690a5;
 }
+
 .helper svg {
   color: #0d9f82;
   flex-shrink: 0;
 }
+
 .saveButton {
   display: inline-flex;
   align-items: center;
@@ -176,7 +217,7 @@
   gap: 0.6rem;
   border: 0;
   border-radius: 0.72rem;
-  background: #7c3aed;
+  background: var(--primary, #7c3aed);
   color: #fff;
   padding: 0.85rem 1.15rem;
   font: inherit;
@@ -189,20 +230,28 @@
     box-shadow 0.2s;
   box-shadow: 0 5px 14px rgba(124, 58, 237, 0.16);
 }
+
 .saveButton:hover:not(:disabled) {
-  background: #6d28d9;
+  background: var(--primary-hover, #6d28d9);
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(124, 58, 237, 0.22);
 }
+
 .saveButton:disabled {
   opacity: 0.6;
   cursor: wait;
 }
+
+/* =========================================
+   REMINDER PREFERENCES
+========================================= */
+
 .preferenceForm {
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
 }
+
 .toggleRow {
   display: flex;
   align-items: center;
@@ -213,11 +262,13 @@
   padding: 1.15rem 1.25rem;
   background: linear-gradient(105deg, #fbf9ff, #fff);
 }
+
 .toggleText {
   display: flex;
   flex-direction: column;
   gap: 0.42rem;
 }
+
 .toggleTitle {
   display: flex;
   align-items: center;
@@ -226,14 +277,17 @@
   font-weight: 750;
   font-size: 0.94rem;
 }
+
 .toggleTitle svg {
   color: #7c3aed;
 }
+
 .toggleText > span:last-child {
   font-size: 0.85rem;
   color: #78839a;
   line-height: 1.5;
 }
+
 .switch {
   position: relative;
   width: 2.85rem;
@@ -241,6 +295,7 @@
   flex-shrink: 0;
   cursor: pointer;
 }
+
 .switch input {
   position: absolute;
   width: 100%;
@@ -249,6 +304,7 @@
   opacity: 0;
   cursor: pointer;
 }
+
 .switchTrack {
   display: block;
   width: 100%;
@@ -257,6 +313,7 @@
   border-radius: 999px;
   transition: background 0.2s;
 }
+
 .switchTrack::after {
   content: "";
   position: absolute;
@@ -269,24 +326,30 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s;
 }
+
 .switch input:checked + .switchTrack {
   background: #7c3aed;
 }
+
 .switch input:checked + .switchTrack::after {
   transform: translateX(1.2rem);
 }
+
 .switch input:focus-visible + .switchTrack {
   outline: 3px solid #c4b5fd;
   outline-offset: 3px;
 }
+
 .selectLabel {
   max-width: 22rem;
 }
+
 .selectLabel select:disabled {
   opacity: 0.55;
   cursor: not-allowed;
   background: #f8f9fc;
 }
+
 .notice {
   display: flex;
   gap: 0.65rem;
@@ -298,11 +361,17 @@
   font-size: 0.83rem;
   line-height: 1.6;
 }
+
 .notice svg {
   flex-shrink: 0;
   color: #7c3aed;
   margin-top: 0.08rem;
 }
+
+/* =========================================
+   MESSAGES AND LOADING
+========================================= */
+
 .errorBanner,
 .successBanner {
   display: flex;
@@ -312,21 +381,26 @@
   border-radius: 0.8rem;
   margin-bottom: 1.15rem;
   font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }
+
 .errorBanner {
   color: #b42318;
   background: #fff0ef;
   border: 1px solid #ffd9d6;
 }
+
 .successBanner {
   color: #087d60;
   background: #e9f9f1;
   border: 1px solid #c5f0db;
 }
+
 .errorBanner > span,
 .successBanner > span {
   flex: 1;
 }
+
 .errorBanner button,
 .successBanner button {
   background: transparent;
@@ -335,6 +409,7 @@
   font-size: 1.3rem;
   cursor: pointer;
 }
+
 .loading {
   padding: 2rem;
   border: 1px solid #e9eaf2;
@@ -342,60 +417,462 @@
   background: #fff;
   color: #667085;
 }
+
+/* =========================================
+   BILLING & SUBSCRIPTION
+========================================= */
+
+.billingHeading {
+  flex: 1;
+  min-width: 0;
+}
+
+.comingSoon {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid #e9d5ff;
+  border-radius: 999px;
+  background: #f7f1ff;
+  color: #7c3aed;
+  font-size: 0.74rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+/* Current plan overview */
+
+.subscriptionOverview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1.7rem;
+  border: 1px solid #e9ddff;
+  border-radius: 1rem;
+  background:
+    radial-gradient(
+      circle at 95% 5%,
+      rgba(196, 181, 253, 0.24),
+      transparent 40%
+    ),
+    linear-gradient(120deg, #faf7ff, #ffffff);
+}
+
+.planSummary {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.planSymbol {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: #ede4ff;
+  color: #7c3aed;
+}
+
+.planLabel {
+  color: #7c3aed;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.planSummary h3 {
+  margin: 0.35rem 0;
+  color: #241c34;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.planSummary p {
+  margin: 0;
+  color: #7a7188;
+  font-size: 0.85rem;
+}
+
+.planPrice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.planPrice strong {
+  color: #241c34;
+  font-size: 1.8rem;
+  font-weight: 850;
+  letter-spacing: -0.05em;
+}
+
+.planPrice span {
+  color: #8b8197;
+  font-size: 0.8rem;
+}
+
+/* Subscription details */
+
+.subscriptionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.subscriptionDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid #e9eaf2;
+  border-radius: 0.85rem;
+  background: #fff;
+}
+
+.subscriptionDetail > span {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #798399;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+
+.subscriptionDetail > span svg {
+  color: #8b5cf6;
+  flex-shrink: 0;
+}
+
+.subscriptionDetail strong {
+  color: #263047;
+  font-size: 1.03rem;
+  font-weight: 800;
+}
+
+.statusActive,
+.statusNeutral {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.statusActive {
+  background: #e8f8ee;
+  color: #15803d !important;
+}
+
+.statusNeutral {
+  background: #f3f4f6;
+  color: #667085 !important;
+}
+
+.statusDot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Billing actions */
+
+.billingActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid #eff0f6;
+}
+
+.billingActions strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #263047;
+  font-size: 0.92rem;
+}
+
+.billingActions p {
+  max-width: 480px;
+  margin: 0;
+  color: #8690a5;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.disabledButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0.75rem 1.1rem;
+  border: 1px solid #e5e0ed;
+  border-radius: 0.7rem;
+  background: #f6f4f9;
+  color: #8c829a;
+  font: inherit;
+  font-size: 0.83rem;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.billingNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px solid #fde68a;
+  border-radius: 0.8rem;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.billingNotice svg {
+  flex-shrink: 0;
+}
+
+.billingFootnote {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  color: #98a2b3;
+  font-size: 0.77rem;
+  line-height: 1.5;
+}
+
+/* No subscription state */
+
+.subscriptionEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 3.8rem;
+  height: 3.8rem;
+  margin-bottom: 1.15rem;
+  border-radius: 1rem;
+  background: #f1e9ff;
+  color: #7c3aed;
+}
+
+.subscriptionEmpty h3 {
+  margin: 0 0 0.6rem;
+  color: #263047;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+}
+
+.subscriptionEmpty > p {
+  max-width: 470px;
+  margin: 0;
+  color: #798399;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+/* Available plans */
+
+.availablePlans {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: 580px;
+  margin: 1.75rem 0;
+}
+
+.planOption {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.4rem;
+  border: 1px solid #e9e4f2;
+  border-radius: 0.9rem;
+  background: #fff;
+  text-align: left;
+}
+
+.planOption > span {
+  color: #7c3aed;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.planOption strong {
+  color: #263047;
+  font-size: 1.35rem;
+  letter-spacing: -0.04em;
+}
+
+.planOption small {
+  color: #8a8195;
+  font-size: 0.78rem;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
 @media (max-width: 900px) {
   .page {
     padding: 1.3rem;
   }
+
   .card {
     padding: 1.25rem;
   }
+
+  .subscriptionOverview {
+    padding: 1.3rem;
+  }
+
+  .subscriptionGrid {
+    gap: 0.8rem;
+  }
 }
+
 @media (max-width: 680px) {
   .page {
     padding: 1rem;
   }
+
   .header {
     align-items: flex-start;
   }
-  .headerPill {
+
+  .headerPill,
+  .comingSoon {
     display: none;
   }
+
   .header h1 {
     font-size: 1.75rem;
   }
+
   .form {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+
   .sectionHeader {
     align-items: flex-start;
   }
+
   .formFooter {
     align-items: stretch;
   }
+
   .saveButton {
     width: 100%;
   }
+
+  .subscriptionOverview {
+    align-items: flex-start;
+  }
+
+  .planPrice {
+    align-items: flex-start;
+  }
+
+  .subscriptionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .billingActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .disabledButton {
+    width: 100%;
+  }
+
+  .subscriptionEmpty {
+    padding: 2rem 0.5rem;
+  }
 }
+
 @media (max-width: 420px) {
   .page {
     padding: 0.8rem;
   }
+
   .card {
     padding: 1rem;
     border-radius: 1rem;
   }
+
   .sectionIcon {
     width: 2.75rem;
     height: 2.75rem;
   }
+
   .sectionHeader h2 {
     font-size: 1.1rem;
   }
+
   .toggleRow {
     padding: 0.85rem;
   }
+
   .toggleText > span:last-child {
     font-size: 0.78rem;
+  }
+
+  .availablePlans {
+    grid-template-columns: 1fr;
+  }
+
+  .planSummary {
+    align-items: flex-start;
+  }
+
+  .planSymbol {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .planSummary h3 {
+    font-size: 1.3rem;
+  }
+
+  .subscriptionDetail {
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saveButton,
+  .switchTrack,
+  .switchTrack::after,
+  .field input,
+  .selectLabel select {
+    transition: none;
   }
 }
