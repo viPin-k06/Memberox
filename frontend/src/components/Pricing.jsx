@@ -4,7 +4,7 @@ import styles from "./Pricing.module.css";
 
 const plans = [
   {
-    name: "Pro",
+    name: "Starter",
     price: "499",
     description: "For independent gyms and studios.",
     memberLimit: "Up to 100 members",
@@ -14,22 +14,21 @@ const plans = [
       "Configurable email reminders",
       "Payment records and revenue overview",
     ],
-    slug: "pro",
+    slug: "starter",
     featured: true,
   },
   {
-    name: "Business",
+    name: "Pro",
     price: "999",
     description: "For businesses with a larger member base.",
     memberLimit: "Unlimited members",
     features: [
-      "Everything in Pro",
+      "Everything in Starter",
       "Unlimited member records",
-      "Membership plans and renewals",
       "Revenue analytics and payment history",
       "Priority support",
     ],
-    slug: "business",
+    slug: "pro",
     featured: false,
   },
 ];

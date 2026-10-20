@@ -1,7 +1,7 @@
 import { Router } from "express";
 import crypto from "node:crypto";
 
-import { processSubscriptionActivated } from "../services/razorpay-webhook.service.js";
+import { processRazorpaySyncEvent } from "../services/razorpay-sync.service.js";
 
 const router = Router();
 
@@ -69,32 +69,42 @@ router.post("/", async (req, res) => {
 
     console.log("Verified Razorpay webhook:", event.event);
 
-    switch (event.event) {
-      case "subscription.activated": {
-        if (typeof eventId !== "string" || !eventId.trim()) {
-          return res.status(400).json({
-            error: "Missing Razorpay event ID",
-          });
-        }
+    const supportedEvents = new Set([
+      "subscription.authenticated",
+      "subscription.activated",
+      "subscription.charged",
+      "subscription.completed",
+      "subscription.updated",
+      "subscription.pending",
+      "subscription.halted",
+      "subscription.cancelled",
+      "subscription.paused",
+      "subscription.resumed",
+    ]);
 
-        const result = await processSubscriptionActivated(event, eventId);
+    if (!supportedEvents.has(event.event)) {
+      console.log("Ignoring unsupported Razorpay event:", event.event);
 
-        console.log("Subscription activation result:", result);
-
-        return res.status(200).json({
-          received: true,
-          result,
-        });
-      }
-
-      default:
-        // We haven't implemented other event
-        // types yet, so don't acknowledge them
-        // as successfully processed.
-        return res.status(503).json({
-          error: "Webhook event handler not implemented",
-        });
+      return res.status(200).json({
+        received: true,
+        ignored: true,
+      });
     }
+
+    if (typeof eventId !== "string" || !eventId.trim()) {
+      return res.status(400).json({
+        error: "Missing Razorpay event ID",
+      });
+    }
+
+    const result = await processRazorpaySyncEvent(event, eventId);
+
+    console.log("Subscription synchronization result:", result);
+
+    return res.status(200).json({
+      received: true,
+      result,
+    });
   } catch (error) {
     console.error("Razorpay webhook processing failed:", error.message);
 

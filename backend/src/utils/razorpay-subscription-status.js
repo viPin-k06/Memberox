@@ -9,6 +9,8 @@ export function mapRazorpaySubscriptionStatus(status) {
 
     case "pending":
     case "halted":
+    case "paused":
+    case "resumed":
       return "past_due";
 
     case "cancelled":

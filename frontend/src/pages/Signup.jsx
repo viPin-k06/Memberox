@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   Check,
@@ -32,6 +32,16 @@ const initialForm = {
 };
 
 const Signup = () => {
+  const [searchParams] = useSearchParams();
+
+  const requestedPlan = searchParams.get("plan");
+
+  const selectedPlan = ["starter", "pro"].includes(requestedPlan)
+    ? requestedPlan
+    : null;
+
+  const loginUrl = selectedPlan ? `/login?plan=${selectedPlan}` : "/login";
+
   const [formData, setFormData] = useState(initialForm);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -103,7 +113,7 @@ const Signup = () => {
         email: email.trim().toLowerCase(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login`,
+          emailRedirectTo: `${window.location.origin}${loginUrl}`,
           data: {
             full_name: ownerName.trim(),
             business_name: businessName.trim(),
@@ -222,7 +232,7 @@ const Signup = () => {
                   : "Your account has been created successfully. Log in to access your workspace."}
               </p>
 
-              <Link to="/login" className={styles.submitButton}>
+              <Link to={loginUrl} className={styles.submitButton}>
                 Continue to login
                 <ArrowRight size={18} />
               </Link>
@@ -417,7 +427,7 @@ const Signup = () => {
               </form>
 
               <p className={styles.switchText}>
-                Already have an account? <Link to="/login">Log in</Link>
+                Already have an account? <Link to={loginUrl}>Log in</Link>
               </p>
 
               <div className={styles.formFooter}>

@@ -88,8 +88,25 @@ router.post("/create", async (req, res) => {
       }
 
       if (existing.razorpay_subscription_id) {
+        if (existing.status === "pending") {
+          const razorpaySubscription = await razorpay.subscriptions.fetch(
+            existing.razorpay_subscription_id,
+          );
+
+          if (razorpaySubscription.status === "created") {
+            return res.status(200).json({
+              subscription_id: razorpaySubscription.id,
+              status: razorpaySubscription.status,
+              plan,
+              key_id: process.env.RAZORPAY_KEY_ID,
+              resumed: true,
+            });
+          }
+        }
+
         return res.status(409).json({
-          error: "A Razorpay subscription already exists",
+          error:
+            "An existing subscription cannot be restarted through checkout",
         });
       }
 
@@ -136,12 +153,12 @@ router.post("/create", async (req, res) => {
         },
       });
     } catch (error) {
-      console.error(
-        "Razorpay subscription request failed:",
-        error.message,
-        "Local subscription:",
-        pending.id,
-      );
+      console.error("Razorpay subscription request failed:", {
+        statusCode: error.statusCode,
+        error: error.error,
+        message: error.message,
+        localSubscriptionId: pending.id,
+      });
 
       // Do not delete the pending record.
       // Razorpay may have created the subscription

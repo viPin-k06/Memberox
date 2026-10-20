@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Check, Eye, EyeOff, LockKeyhole } from "lucide-react";
 
 import { supabase } from "../lib/supabase";
@@ -7,6 +7,14 @@ import styles from "./Auth.module.css";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+
+  const requestedPlan = searchParams.get("plan");
+
+  const selectedPlan = ["starter", "pro"].includes(requestedPlan)
+    ? requestedPlan
+    : null;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +48,10 @@ const Login = () => {
         throw new Error("Unable to log in. Please try again.");
       }
 
-      navigate("/dashboard", { replace: true });
+      navigate(
+        selectedPlan ? `/dashboard?plan=${selectedPlan}` : "/dashboard",
+        { replace: true },
+      );
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
     } finally {

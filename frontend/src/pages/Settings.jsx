@@ -83,6 +83,9 @@ const Settings = () => {
   const [plan, setPlan] = useState(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [subscriptionError, setSubscriptionError] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState("starter");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   // Temporary subscription API test state
   const [testingAPI, setTestingAPI] = useState(false);
@@ -330,6 +333,121 @@ const Settings = () => {
       });
     } finally {
       setTestingAPI(false);
+    }
+  };
+
+  const startCheckout = async () => {
+    if (checkoutLoading) return;
+
+    setCheckoutLoading(true);
+    setCheckoutError("");
+
+    try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        throw new Error("Please log in again.");
+      }
+
+      if (!window.Razorpay) {
+        throw new Error(
+          "Razorpay Checkout is unavailable. Please refresh the page and try again.",
+        );
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/subscriptions/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ plan: selectedPlan }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Unable to create subscription.");
+      }
+
+      if (!window.Razorpay) {
+        throw new Error("Razorpay Checkout could not be loaded.");
+      }
+
+      if (!result.subscription_id || !result.key_id) {
+        throw new Error("Incomplete checkout details received.");
+      }
+
+      const options = {
+        key: result.key_id,
+        subscription_id: result.subscription_id,
+        name: "TejTrack",
+        description: `${selectedPlan === "starter" ? "Starter" : "Pro"} Monthly Subscription`,
+        handler: async (payment) => {
+          try {
+            setCheckoutError("");
+
+            const verifyResponse = await fetch(
+              `${import.meta.env.VITE_API_BASE_URL}/api/subscriptions/verify`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({
+                  razorpay_payment_id: payment.razorpay_payment_id,
+                  razorpay_subscription_id: payment.razorpay_subscription_id,
+                  razorpay_signature: payment.razorpay_signature,
+                }),
+              },
+            );
+
+            const verifyResult = await verifyResponse.json();
+
+            if (!verifyResponse.ok) {
+              throw new Error(
+                verifyResult.error || "Payment verification failed.",
+              );
+            }
+
+            console.log("Payment signature verified successfully.");
+
+            // Subscription activation is handled by the Razorpay webhook.
+            // We'll refresh the subscription status in a later step.
+          } catch (err) {
+            setCheckoutError(err.message || "Unable to verify payment.");
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            console.log("Razorpay Checkout closed.");
+          },
+        },
+        theme: {
+          color: "#7C3AED",
+        },
+      };
+
+      const checkout = new window.Razorpay(options);
+
+      checkout.on("payment.failed", (response) => {
+        setCheckoutError(
+          response.error?.description || "Payment failed. Please try again.",
+        );
+      });
+
+      checkout.open();
+    } catch (err) {
+      setCheckoutError(err.message || "Something went wrong.");
+    } finally {
+      setCheckoutLoading(false);
     }
   };
 
@@ -581,26 +699,51 @@ const Settings = () => {
                 </p>
 
                 <div className={styles.availablePlans}>
-                  <div className={styles.planOption}>
+                  <label className={styles.planOption}>
+                    <input
+                      type="radio"
+                      name="subscriptionPlan"
+                      value="starter"
+                      checked={selectedPlan === "starter"}
+                      onChange={() => setSelectedPlan("starter")}
+                    />
                     <span>Starter</span>
                     <strong>₹499/month</strong>
                     <small>Up to 100 members</small>
-                  </div>
+                  </label>
 
-                  <div className={styles.planOption}>
+                  <label className={styles.planOption}>
+                    <input
+                      type="radio"
+                      name="subscriptionPlan"
+                      value="pro"
+                      checked={selectedPlan === "pro"}
+                      onChange={() => setSelectedPlan("pro")}
+                    />
                     <span>Pro</span>
                     <strong>₹999/month</strong>
                     <small>Unlimited members</small>
-                  </div>
+                  </label>
                 </div>
 
                 <button
                   type="button"
                   className={styles.disabledButton}
-                  disabled
+                  onClick={startCheckout}
+                  disabled={checkoutLoading}
                 >
-                  Subscribe — Coming soon
+                  {checkoutLoading
+                    ? "Opening Checkout..."
+                    : `Test Subscribe — ${selectedPlan === "starter" ? "₹499" : "₹999"}/month`}
                 </button>
+                {checkoutError && (
+                  <p
+                    role="alert"
+                    style={{ color: "#DC2626", marginTop: "1rem" }}
+                  >
+                    {checkoutError}
+                  </p>
+                )}
               </div>
             ) : (
               <>
