@@ -1,7 +1,5 @@
 import crypto from "node:crypto";
-
 import { Router } from "express";
-
 import { supabase } from "../config/supabase.js";
 import { supabaseAdmin } from "../config/supabase-admin.js";
 import { razorpay } from "../config/razorpay.js";
@@ -345,7 +343,6 @@ router.post("/verify", async (req, res) => {
       .digest("hex");
 
     const received = Buffer.from(razorpay_signature, "hex");
-
     const expected = Buffer.from(expectedSignature, "hex");
 
     if (
@@ -368,6 +365,14 @@ router.post("/verify", async (req, res) => {
       error: "Unable to verify payment",
     });
   }
+});
+
+// Cancellation is temporarily disabled until
+// Razorpay synchronization is fully verified.
+router.post("/cancel", (_req, res) => {
+  return res.status(503).json({
+    error: "Subscription cancellation is temporarily unavailable.",
+  });
 });
 
 export default router;
